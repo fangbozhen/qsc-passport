@@ -1,0 +1,5 @@
+# config files #
+*.json
+*.yaml
+*.toml
+*.ini
