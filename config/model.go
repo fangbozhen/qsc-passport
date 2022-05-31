@@ -5,6 +5,7 @@ type ServerType struct {
 	Port                int
 	SessionSecretString string
 	SessionSecret       []byte `json:"-"`
+	Domain              string
 }
 
 type MongoDBType struct {
