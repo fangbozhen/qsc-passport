@@ -10,6 +10,7 @@ import (
 
 type JsonResp struct {
 	Err  string
+	Code int
 	Data interface{}
 }
 
@@ -18,9 +19,9 @@ func set_resp(c *gin.Context, resp JsonResp) {
 }
 
 func JSON(c *gin.Context, obj interface{}) {
-	set_resp(c, JsonResp{"", obj})
+	set_resp(c, JsonResp{"", 0, obj})
 }
 
-func ERR(c *gin.Context, str string) {
-	set_resp(c, JsonResp{str, nil})
+func ERR(c *gin.Context, code int, str string) {
+	set_resp(c, JsonResp{str, code, nil})
 }

@@ -19,8 +19,8 @@ const qsc_login_url = "qsc.zju.edu.cn/lllooogggiiinnn"
 func QSC_Login(c *gin.Context) {
 
 	var req struct {
-		Username string
-		Password string
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
 	var qsc_user model.UserProfileQsc
 	var user model.User
@@ -34,14 +34,17 @@ func QSC_Login(c *gin.Context) {
 
 	rs, err := http.Get(fmt.Sprintf("%s?%s", qsc_login_url, query.Encode()))
 	if err != nil {
+		resp.ERR(c, resp.E_INTERNAL_ERROR, "bbs user server error")
 		return
 	}
 
 	body, err := ioutil.ReadAll(rs.Body)
 	if err != nil {
+		resp.ERR(c, resp.E_INTERNAL_ERROR, "http read error")
 		return
 	}
 	if err := json.Unmarshal(body, &qsc_user); err != nil {
+		resp.ERR(c, resp.E_INTERNAL_ERROR, "bbs user server error")
 		return
 	}
 	// TODO 判断失败情况

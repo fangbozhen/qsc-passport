@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"passport-v4/config"
 	. "passport-v4/global"
 	"passport-v4/model"
 	"passport-v4/util/resp"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -40,8 +42,8 @@ func ZJU_OauthInit() {
 func ZJU_LoginRequest(c *gin.Context) {
 
 	var req struct {
-		SuccessUrl string
-		FailUrl    string
+		SuccessUrl string `json:"success_url"`
+		FailUrl    string `json:"fail_url"`
 	}
 	c.ShouldBind(&req)
 
@@ -70,7 +72,8 @@ func ZJU_OauthCodeReturn(c *gin.Context) {
 	if state != "" {
 		session_state, ok := ss.Get(SS_KEY_STATE).(string)
 		if !ok || session_state != state {
-			resp.ERR(c, "state param incorrect")
+			redirect_login_failed(c, resp.E_WRONG_REQUEST, "state param incorrect")
+			return
 		}
 	}
 
@@ -80,15 +83,17 @@ func ZJU_OauthCodeReturn(c *gin.Context) {
 	/*** 后端通过code获取access_token ***/
 	tok, err := zju_oauth.Exchange(ctx, code)
 	if err != nil {
-		redirect_login_failed(c, "cannot acquire access_token")
+		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "cannot acquire access_token")
 		return
 	}
+
+	ss.Clear()
 
 	ss.Set(SS_KEY_ACCESS_TOKEN, tok.AccessToken)
 
 	zju_user, ok := get_zju_profile(tok.AccessToken)
 	if !ok {
-		redirect_login_failed(c, "cannot get zju profile")
+		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "cannot get zju profile")
 		return
 	}
 
@@ -99,26 +104,30 @@ func ZJU_OauthCodeReturn(c *gin.Context) {
 	redirect_login_success(c)
 }
 
-func redirect_login_failed(c *gin.Context, reason string) {
+func redirect_login_failed(c *gin.Context, code int, reason string) {
 	ss := sessions.Default(c)
-	url, ok := ss.Get(SS_KEY_FAILED_URL).(string)
+	uri, ok := ss.Get(SS_KEY_FAILED_URL).(string)
 	if !ok {
 		logrus.Warn("login failed, but FAILED_URL not set")
 		return
 	}
-	url = fmt.Sprintf("%s?reason=%s", url, reason)
-	logrus.Infof("login failed: %s", reason)
-	c.Redirect(302, url)
+	query := url.Values{}
+	query.Set("reason", reason)
+	query.Set("code", strconv.Itoa(code))
+	uri = fmt.Sprintf("%s?%s", uri, query.Encode())
+	logrus.Infof("login failed: [%d] %s", code, reason)
+
+	c.Redirect(302, uri)
 }
 
 func redirect_login_success(c *gin.Context) {
 	ss := sessions.Default(c)
-	url, ok := ss.Get(SS_KEY_SUCCESS_URL).(string)
+	uri, ok := ss.Get(SS_KEY_SUCCESS_URL).(string)
 	if !ok {
 		logrus.Warn("login success, but SUCCESS_URL not set")
 		return
 	}
-	c.Redirect(302, url)
+	c.Redirect(302, uri)
 }
 
 func get_zju_profile(accass_token string) (user model.UserProfileZju, ok bool) {

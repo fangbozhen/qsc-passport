@@ -1,0 +1,7 @@
+package resp
+
+const (
+	E_AUTH_FAILED    = 10001
+	E_INTERNAL_ERROR = 10002
+	E_WRONG_REQUEST  = 10003
+)
