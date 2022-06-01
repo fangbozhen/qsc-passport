@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"passport-v4/config"
-	"passport-v4/database"
+	"passport-v4/handler"
 	"passport-v4/model"
 	"passport-v4/server"
 	"time"
@@ -34,11 +34,13 @@ func initLogger() error {
 func main() {
 	initLogger()
 	Do(config.Init())
-	Do(database.Init())
 	Do(model.Init())
 
 	e := gin.Default()
 	Do(server.Init(e))
+
+	handler.ZJU_OauthInit()
+
 	rand.Seed(time.Hour.Milliseconds())
 
 	logrus.Infof("Gin Server Started")

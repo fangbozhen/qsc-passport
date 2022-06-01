@@ -6,10 +6,12 @@ require (
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.1.2
+	github.com/shimohq/go-url-join v1.0.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.9.0
 	go.mongodb.org/mongo-driver v1.8.0
+	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
 )
 
 require (
@@ -50,9 +52,11 @@ require (
 	github.com/xdg-go/stringprep v1.0.2 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
 	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

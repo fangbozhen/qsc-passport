@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	ss_redis "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func initSession(e *gin.Engine) error {
@@ -23,6 +24,7 @@ func initSession(e *gin.Engine) error {
 		HttpOnly: true,
 	})
 	if err != nil {
+		logrus.Error("cannot init redistore for gin session")
 		return err
 	}
 	e.Use(sessions.Sessions("SESSION_TOKEN", redis_store))

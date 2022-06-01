@@ -6,14 +6,7 @@ type ServerType struct {
 	SessionSecretString string
 	SessionSecret       []byte `json:"-"`
 	Domain              string
-}
-
-type MongoDBType struct {
-	Host     string
-	Port     int
-	Username string
-	Password string
-	DbName   string
+	SessionExpire       int
 }
 
 type RedisType struct {
@@ -23,8 +16,13 @@ type RedisType struct {
 	DB       int
 }
 
+type ZjuOauthType struct {
+	ClientID     string
+	ClientSecret string
+}
+
 type ConfigType struct {
-	Server  ServerType
-	MongoDB MongoDBType
-	Redis   RedisType
+	Server   ServerType
+	Redis    RedisType
+	ZjuOauth ZjuOauthType
 }

@@ -1,20 +1,24 @@
 package server
 
 import (
+	"passport-v4/handler"
+	"passport-v4/server/midware"
+
 	"github.com/gin-gonic/gin"
 )
 
+func Ping(c *gin.Context) {
+	c.String(200, "pong!")
+}
+
 func configRoutes(e *gin.Engine) {
-	// //根节点
-	// root := e.Group("/", midware.Response)
+	//根节点
+	root := e.Group("/", midware.Response)
+	root.GET("/ping", Ping)
 
-	// //通用接口，不需要token
-	// common := root.Group("/", midware.RemoveUndefinedQuery)
-	// common.GET("/login", handler.UserLogin)
-
-	// //用户接口，需要token
-	// user := root.Group("/user", midware.CheckToken)
-	// user.GET("/get", handler.UserGet)
-	// user.GET("/get_profile", handler.UserGetProfile)
-	// user.GET("/set_profile", handler.UserSetProfile)
+	root.POST("/zju/login", handler.ZJU_LoginRequest)
+	root.GET("/zju/login_success", handler.ZJU_OauthCodeReturn)
+	root.POST("/qsc/login", handler.QSC_Login)
+	root.GET("/logout", handler.Logout)
+	root.GET("/profile", handler.GetProfile)
 }

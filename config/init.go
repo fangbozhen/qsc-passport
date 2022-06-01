@@ -25,9 +25,9 @@ func Init() error {
 		return err
 	}
 
-	Mongo = config.MongoDB
 	Server = config.Server
 	Redis = config.Redis
+	ZjuOauth = config.ZjuOauth
 
 	Server.SessionSecret = make([]byte, 1000)
 	_, err = base64.RawStdEncoding.Decode(Server.SessionSecret, []byte(Server.SessionSecretString))
