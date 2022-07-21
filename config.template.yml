@@ -1,0 +1,16 @@
+Server:
+  Host: ""
+  Port: 3000
+  SessionSecretString: "SET_YOUR_SECRET_HERE"
+  Domain: "THE_BASE_DOMAIN_NAME"
+  SessionExpire: 604800 # 3600*24*7
+
+Redis:
+  Host: "redis" # the name is resolved by docker-compose :: network
+  Port: 6379
+  Password: ""
+  DB: 0
+
+ZjuOauth: 
+  ClientID: "SET_APP_ID_HERE"
+  ClientSecret: "SET_APP_SECRET_HERE"

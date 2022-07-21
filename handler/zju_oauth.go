@@ -109,6 +109,7 @@ func redirect_login_failed(c *gin.Context, code int, reason string) {
 	uri, ok := ss.Get(SS_KEY_FAILED_URL).(string)
 	if !ok {
 		logrus.Warn("login failed, but FAILED_URL not set")
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	query := url.Values{}
@@ -125,6 +126,7 @@ func redirect_login_success(c *gin.Context) {
 	uri, ok := ss.Get(SS_KEY_SUCCESS_URL).(string)
 	if !ok {
 		logrus.Warn("login success, but SUCCESS_URL not set")
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	c.Redirect(302, uri)
