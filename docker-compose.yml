@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:7
+    container_name: passport_redis
+    restart: always
+    hostname: redis
+    volumes:
+      - "[REDIS_CONF]:/usr/local/etc/redis/redis.conf"
+    command:
+      "redis-server /usr/local/etc/redis/redis.conf"
+    expose:
+      - 6379
+
+  passport-v4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: passport_v4_server
+    restart: always
+    ports:
+      - 14514
+    links:
+      - "redis:redis"
+    depends_on:
+      - "redis"
