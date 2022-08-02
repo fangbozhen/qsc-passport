@@ -14,15 +14,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const qsc_login_url = "qsc.zju.edu.cn/lllooogggiiinnn"
+const QscLoginUrl = "qsc.zju.edu.cn/lllooogggiiinnn"
 
-func QSC_Login(c *gin.Context) {
+func QscLogin(c *gin.Context) {
 
 	var req struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
-	var qsc_user model.UserProfileQsc
+	var qscUser model.UserProfileQsc
 	var user model.User
 
 	ss := sessions.Default(c)
@@ -32,26 +32,26 @@ func QSC_Login(c *gin.Context) {
 	query.Set("username", req.Username)
 	query.Set("password", req.Password)
 
-	rs, err := http.Get(fmt.Sprintf("%s?%s", qsc_login_url, query.Encode()))
+	rs, err := http.Get(fmt.Sprintf("%s?%s", QscLoginUrl, query.Encode()))
 	if err != nil {
-		resp.ERR(c, resp.E_INTERNAL_ERROR, "bbs user server error")
+		resp.Err(c, resp.E_INTERNAL_ERROR, "bbs user server error")
 		return
 	}
 
 	body, err := ioutil.ReadAll(rs.Body)
 	if err != nil {
-		resp.ERR(c, resp.E_INTERNAL_ERROR, "http read error")
+		resp.Err(c, resp.E_INTERNAL_ERROR, "http read error")
 		return
 	}
-	if err := json.Unmarshal(body, &qsc_user); err != nil {
-		resp.ERR(c, resp.E_INTERNAL_ERROR, "bbs user server error")
+	if err := json.Unmarshal(body, &qscUser); err != nil {
+		resp.Err(c, resp.E_INTERNAL_ERROR, "bbs user server error")
 		return
 	}
 	// TODO 判断失败情况
 
-	user = model.QscProfile2User(qsc_user)
+	user = model.QscProfile2User(qscUser)
 	ss.Set(SS_KEY_USER, user)
 
-	resp.JSON(c, user)
+	resp.Json(c, user)
 
 }

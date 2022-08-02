@@ -22,7 +22,7 @@ import (
 
 /*** 当用户还没登录，跳转到登录界面 ***/
 
-func ZJU_LoginRequest(c *gin.Context) {
+func ZjuLoginRequest(c *gin.Context) {
 
 	var req struct {
 		SuccessUrl string `form:"success"`
@@ -31,7 +31,7 @@ func ZJU_LoginRequest(c *gin.Context) {
 	err := c.ShouldBindQuery(&req)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		resp.ERR(c, resp.E_WRONG_REQUEST, "参数错误")
+		resp.Err(c, resp.E_WRONG_REQUEST, "参数错误")
 		return
 	}
 
@@ -51,7 +51,7 @@ func ZJU_LoginRequest(c *gin.Context) {
 	})
 }
 
-func ZJU_OauthCodeReturn(c *gin.Context) {
+func ZjuOauthCodeReturn(c *gin.Context) {
 	ss := sessions.Default(c)
 	code := c.Query("code")
 
@@ -65,7 +65,7 @@ func ZJU_OauthCodeReturn(c *gin.Context) {
 
 	if err != nil {
 		fmt.Printf("err: %s", err.Error())
-		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "cannot acquire access_token")
+		redirectLoginFailed(c, resp.E_INTERNAL_ERROR, "cannot acquire access_token")
 		return
 	}
 
@@ -79,7 +79,7 @@ func ZJU_OauthCodeReturn(c *gin.Context) {
 	defer r.Body.Close()
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "zjuam bad response")
+		redirectLoginFailed(c, resp.E_INTERNAL_ERROR, "zjuam bad response")
 		return
 	}
 	if bytes.HasPrefix(bs, []byte("error=")) {
@@ -88,34 +88,34 @@ func ZJU_OauthCodeReturn(c *gin.Context) {
 	err = json.Unmarshal(bs, &tok)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "zjuam bad response")
+		redirectLoginFailed(c, resp.E_INTERNAL_ERROR, "zjuam bad response")
 		return
 	}
 	if tok.ErrCode != "" {
 		logrus.Errorf("zjuam failed %s %s", tok.ErrCode, tok.ErrMsg)
 
-		redirect_login_failed(c, resp.E_INTERNAL_ERROR,
+		redirectLoginFailed(c, resp.E_INTERNAL_ERROR,
 			"zjuam failed")
 		return
 	}
 	ss.Set(SS_KEY_ACCESS_TOKEN, tok.AccessToken)
 	ss.Save()
-	zju_user, ok := get_zju_profile(tok.AccessToken)
+	zjuUser, ok := getZjuProfile(tok.AccessToken)
 	if !ok {
-		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "cannot get zju profile")
+		redirectLoginFailed(c, resp.E_INTERNAL_ERROR, "cannot get zju profile")
 		return
 	}
 
-	user := model.ZjuProfile2User(zju_user)
+	user := model.ZjuProfile2User(zjuUser)
 
 	ss.Set(SS_KEY_USER, user)
 
 	fmt.Printf("login success: %s %s", user.Name, user.ZjuId)
 
-	redirect_login_success(c)
+	redirectLoginSuccess(c)
 }
 
-func redirect_login_failed(c *gin.Context, code int, reason string) {
+func redirectLoginFailed(c *gin.Context, code int, reason string) {
 	ss := sessions.Default(c)
 	fmt.Printf("login failed: %d %s", code, reason)
 	uri, ok := ss.Get(SS_KEY_FAILED_URL).(string)
@@ -133,7 +133,7 @@ func redirect_login_failed(c *gin.Context, code int, reason string) {
 	c.Redirect(302, uri)
 }
 
-func redirect_login_success(c *gin.Context) {
+func redirectLoginSuccess(c *gin.Context) {
 	ss := sessions.Default(c)
 	uri, ok := ss.Get(SS_KEY_SUCCESS_URL).(string)
 	if !ok {
@@ -144,9 +144,9 @@ func redirect_login_success(c *gin.Context) {
 	c.Redirect(302, uri)
 }
 
-func get_zju_profile(accass_token string) (user model.UserProfileZju, ok bool) {
+func getZjuProfile(accessToken string) (user model.UserProfileZju, ok bool) {
 	ok = false
-	url := fmt.Sprintf("https://zjuam.zju.edu.cn/cas/oauth2.0/profile?access_token=%s", accass_token)
+	url := fmt.Sprintf("https://zjuam.zju.edu.cn/cas/oauth2.0/profile?access_token=%s", accessToken)
 	resp, err := http.Get(url)
 	if err != nil {
 		return

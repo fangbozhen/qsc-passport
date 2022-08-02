@@ -6,22 +6,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: error code
-
 type JsonResp struct {
-	Err  string
-	Code int
-	Data interface{}
+	Err  string      `json:"err"`
+	Code int         `json:"code"`
+	Data interface{} `json:"data"`
 }
 
-func set_resp(c *gin.Context, resp JsonResp) {
+func setResp(c *gin.Context, resp JsonResp) {
 	c.Set(CTX_RESPONSE, resp)
 }
 
-func JSON(c *gin.Context, obj interface{}) {
-	set_resp(c, JsonResp{"", 0, obj})
+func Json(c *gin.Context, obj interface{}) {
+	setResp(c, JsonResp{"", 0, obj})
 }
 
-func ERR(c *gin.Context, code int, str string) {
-	set_resp(c, JsonResp{str, code, nil})
+func Err(c *gin.Context, code int, str string) {
+	setResp(c, JsonResp{str, code, nil})
 }

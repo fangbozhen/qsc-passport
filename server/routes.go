@@ -18,9 +18,9 @@ func configRoutes(e *gin.Engine) {
 	root := e.Group("/", midware.Response)
 	root.GET("/ping", Ping)
 
-	root.GET("/zju/login", handler.ZJU_LoginRequest)
-	root.GET("/zju/login_success", handler.ZJU_OauthCodeReturn)
-	root.POST("/qsc/login", handler.QSC_Login)
+	root.GET("/zju/login", handler.ZjuLoginRequest)
+	root.GET("/zju/login_success", handler.ZjuOauthCodeReturn)
+	root.POST("/qsc/login", handler.QscLogin)
 	root.GET("/logout", handler.Logout)
 	root.GET("/profile", handler.GetProfile)
 }

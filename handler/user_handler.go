@@ -15,18 +15,18 @@ func Logout(c *gin.Context) {
 	ss.Clear()
 	ss.Save()
 
-	resp.JSON(c, nil)
+	resp.Json(c, nil)
 }
 
 func GetProfile(c *gin.Context) {
 	ss := sessions.Default(c)
 	user, ok := ss.Get(SS_KEY_USER).(model.User)
 	if !ok {
-		resp.JSON(c, gin.H{
+		resp.Json(c, gin.H{
 			"logined": false,
 		})
 	}
-	resp.JSON(c, gin.H{
+	resp.Json(c, gin.H{
 		"logined": true,
 		"user":    user,
 	})
