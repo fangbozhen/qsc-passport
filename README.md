@@ -37,7 +37,7 @@
 }
 ```
 
-### 浙大统一认证登录 /zju/login [POST]
+### 浙大统一认证登录 /zju/login [GET]
 - 认证流程
     - 浏览器端访问此API
     - 返回302重定向，进入浙大统一认证页面
@@ -49,13 +49,7 @@
     - 统一认证登录采用oauth机制，客户端必须保证用户可以在302跳转后可以与统一认证页面交互
     - 用户名及密码错误不会返回；会卡在统一认证界面；需要客户端设计返回上一级的按钮
     - failed_url重定向时会携带query参数：错误码code和错误信息reason
-- request body
-```json
-{
-    "success_url": "https://xxx",
-    "failed_url": "https://xxx",
-}
-```
+- request query:    success=AAA&fail=BBB
 - response [302]
 redirect to zjuam
 

@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 	"passport-v4/config"
 	"strconv"
 
@@ -19,13 +20,18 @@ func initSession(e *gin.Engine) error {
 	if err != nil {
 		logrus.Fatal("cannot connect to Redis! ", err.Error())
 	}
-	redis_store.Options(sessions.Options{
+	opt := sessions.Options{
 		Path:     "/",
 		Domain:   config.Server.Domain,
 		MaxAge:   config.Server.SessionExpire,
 		Secure:   true,
 		HttpOnly: true,
-	})
+		SameSite: http.SameSiteLaxMode,
+	}
+	if gin.Mode() != gin.ReleaseMode {
+		opt.Secure = false
+	}
+	redis_store.Options(opt)
 	if err != nil {
 		logrus.Error("cannot init redistore for gin session")
 		return err

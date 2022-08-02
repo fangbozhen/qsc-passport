@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"os"
 	"passport-v4/config"
-	"passport-v4/handler"
 	"passport-v4/model"
 	"passport-v4/server"
 	"time"
@@ -38,8 +37,6 @@ func main() {
 
 	e := gin.Default()
 	Do(server.Init(e))
-
-	handler.ZJU_OauthInit()
 
 	rand.Seed(time.Hour.Milliseconds())
 

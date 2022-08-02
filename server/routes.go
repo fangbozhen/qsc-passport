@@ -12,11 +12,13 @@ func Ping(c *gin.Context) {
 }
 
 func configRoutes(e *gin.Engine) {
+	e.LoadHTMLFiles("handler/redirect.html")
+
 	//根节点
 	root := e.Group("/", midware.Response)
 	root.GET("/ping", Ping)
 
-	root.POST("/zju/login", handler.ZJU_LoginRequest)
+	root.GET("/zju/login", handler.ZJU_LoginRequest)
 	root.GET("/zju/login_success", handler.ZJU_OauthCodeReturn)
 	root.POST("/qsc/login", handler.QSC_Login)
 	root.GET("/logout", handler.Logout)

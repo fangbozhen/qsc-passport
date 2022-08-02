@@ -2,7 +2,13 @@ Server:
   Host: ""
   Port: 3000
   SessionSecretString: "SET_YOUR_SECRET_HERE"
+
+  # For Cookie, like ".qsc.zju.edu.cn"
   Domain: "THE_BASE_DOMAIN_NAME"
+  
+  # End with NO '/'
+  # Used for 302 redirect.
+  UrlPrefix: "https://xxx.com/yyy"
   SessionExpire: 604800 # 3600*24*7
 
 Redis:
@@ -14,3 +20,4 @@ Redis:
 ZjuOauth: 
   ClientID: "SET_APP_ID_HERE"
   ClientSecret: "SET_APP_SECRET_HERE"
+  SsoUrl: "https://www.qsc.zju.edu.cn/passport" # 填报给信息中心的「单点登录地址」

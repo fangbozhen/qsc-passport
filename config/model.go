@@ -6,6 +6,7 @@ type ServerType struct {
 	SessionSecretString string
 	SessionSecret       []byte `json:"-"`
 	Domain              string
+	UrlPrefix           string
 	SessionExpire       int
 }
 
@@ -19,6 +20,7 @@ type RedisType struct {
 type ZjuOauthType struct {
 	ClientID     string
 	ClientSecret string
+	SsoUrl       string
 }
 
 type ConfigType struct {

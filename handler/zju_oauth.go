@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"context"
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,81 +17,89 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/oauth2"
 )
 
 /*** 当用户还没登录，跳转到登录界面 ***/
 
-var zju_oauth *oauth2.Config
-
-func ZJU_OauthInit() {
-	zju_oauth = &oauth2.Config{
-		ClientID:     config.ZjuOauth.ClientID,
-		ClientSecret: config.ZjuOauth.ClientSecret,
-		Scopes:       []string{}, // 看起来zju的oauth不需要这个
-		Endpoint: oauth2.Endpoint{
-			TokenURL:  "https://zjuam.zju.edu.cn/cas/oauth2.0/accessToken",
-			AuthURL:   "https://zjuam.zju.edu.cn/cas/oauth2.0/authorize",
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		RedirectURL: "https://qsc.zju.edu.cn/zju_oauth/code",
-	}
-}
-
 func ZJU_LoginRequest(c *gin.Context) {
 
 	var req struct {
-		SuccessUrl string `json:"success_url"`
-		FailUrl    string `json:"fail_url"`
+		SuccessUrl string `form:"success"`
+		FailUrl    string `form:"fail"`
 	}
-	c.ShouldBind(&req)
+	err := c.ShouldBindQuery(&req)
+	if err != nil {
+		logrus.Errorf("err: %s", err.Error())
+		resp.ERR(c, resp.E_WRONG_REQUEST, "参数错误")
+		return
+	}
 
 	ss := sessions.Default(c)
-	defer ss.Save()
 
-	state := uuid.New().String()
-	ss.Set(SS_KEY_STATE, state)
 	ss.Set(SS_KEY_SUCCESS_URL, req.SuccessUrl)
 	ss.Set(SS_KEY_FAILED_URL, req.FailUrl)
+	ss.Save()
 
-	url := zju_oauth.AuthCodeURL(state)
-	c.Redirect(302, url)
+	url := fmt.Sprintf("https://zjuam.zju.edu.cn/cas/oauth2.0/authorize?client_id=%s&redirect_uri=%s&response_type=code",
+		config.ZjuOauth.ClientID,
+		url.QueryEscape(config.Server.UrlPrefix+"/zju/login_success"))
+
+	// 302 会导致Cookie丢失
+	c.HTML(200, "redirect.html", gin.H{
+		"href": url,
+	})
 }
 
 func ZJU_OauthCodeReturn(c *gin.Context) {
-	ctx := context.Background()
 	ss := sessions.Default(c)
-	defer ss.Save()
 	code := c.Query("code")
 
-	// 理论上需要判断回传state和session中的是否相等
-	// 但是我看zjuam文档并没说返回这个值em
-	// 所以拿不到这个值也就不报错了
-	state := c.Query("state")
-	if state != "" {
-		session_state, ok := ss.Get(SS_KEY_STATE).(string)
-		if !ok || session_state != state {
-			redirect_login_failed(c, resp.E_WRONG_REQUEST, "state param incorrect")
-			return
-		}
-	}
-
 	httpClient := &http.Client{Timeout: 2 * time.Second}
-	ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
+	url := fmt.Sprintf("https://zjuam.zju.edu.cn/cas/oauth2.0/accessToken?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s",
+		config.ZjuOauth.ClientID,
+		config.ZjuOauth.ClientSecret,
+		code,
+		url.QueryEscape(config.ZjuOauth.SsoUrl))
+	r, err := httpClient.Get(url)
 
-	/*** 后端通过code获取access_token ***/
-	tok, err := zju_oauth.Exchange(ctx, code)
 	if err != nil {
+		fmt.Printf("err: %s", err.Error())
 		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "cannot acquire access_token")
 		return
 	}
 
-	ss.Clear()
+	var tok struct {
+		AccessToken string `json:"access_token"`
+		ExpiresIn   int    `json:"expires_in"`
+		ErrCode     string `json:"errorcode"`
+		ErrMsg      string `json:"errormsg"`
+	}
+	bs, err := io.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		logrus.Errorf("err: %s", err.Error())
+		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "zjuam bad response")
+		return
+	}
+	if bytes.HasPrefix(bs, []byte("error=")) {
+		bs = bs[6:]
+	}
+	err = json.Unmarshal(bs, &tok)
+	if err != nil {
+		logrus.Errorf("err: %s", err.Error())
+		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "zjuam bad response")
+		return
+	}
+	if tok.ErrCode != "" {
+		logrus.Errorf("zjuam failed %s %s", tok.ErrCode, tok.ErrMsg)
 
+		redirect_login_failed(c, resp.E_INTERNAL_ERROR,
+			"zjuam failed")
+		return
+	}
 	ss.Set(SS_KEY_ACCESS_TOKEN, tok.AccessToken)
-
+	ss.Save()
 	zju_user, ok := get_zju_profile(tok.AccessToken)
 	if !ok {
 		redirect_login_failed(c, resp.E_INTERNAL_ERROR, "cannot get zju profile")
@@ -101,11 +110,14 @@ func ZJU_OauthCodeReturn(c *gin.Context) {
 
 	ss.Set(SS_KEY_USER, user)
 
+	fmt.Printf("login success: %s %s", user.Name, user.ZjuId)
+
 	redirect_login_success(c)
 }
 
 func redirect_login_failed(c *gin.Context, code int, reason string) {
 	ss := sessions.Default(c)
+	fmt.Printf("login failed: %d %s", code, reason)
 	uri, ok := ss.Get(SS_KEY_FAILED_URL).(string)
 	if !ok {
 		logrus.Warn("login failed, but FAILED_URL not set")

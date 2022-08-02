@@ -16,13 +16,10 @@ func Response(c *gin.Context) {
 	}
 	obj, has := c.Get(CTX_RESPONSE)
 	if !has {
-		logrus.Errorf("[Response midware] CTX_RESPONSE Not Found")
-		c.Status(http.StatusInternalServerError)
 		return
 	}
 	resp, ok := obj.(resp.JsonResp)
 	if !ok {
-		c.Status(http.StatusInternalServerError)
 		logrus.Errorf("[Response midware] CTX_RESPONSE Type Error")
 		return
 	}

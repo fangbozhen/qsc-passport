@@ -2,7 +2,8 @@ FROM golang:1.17-bullseye AS builder
 
 ENV GOPROXY=https://mirrors.aliyun.com/goproxy/,direct \
 	GO111MODULE=on \
-	CGO_ENABLED=0
+	CGO_ENABLED=0 \
+	GIN_MODE=release
 
 WORKDIR /workdir/
 

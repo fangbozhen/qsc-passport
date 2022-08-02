@@ -13,14 +13,30 @@ type User struct {
 }
 
 type UserProfileZju struct {
-	Name string `json:"NM"`
+	Id         string              `json:"id"`
+	Attributes []map[string]string `json:"attributes"`
 }
 
 type UserProfileQsc struct {
 }
 
 func ZjuProfile2User(pf UserProfileZju) User {
-	return User{LoginType: LT_ZJU}
+	user := User{
+		LoginType: LT_ZJU,
+		Name:      "",
+		ZjuId:     "",
+	}
+	for _, item := range pf.Attributes {
+		for k, v := range item {
+			if k == "XM" {
+				user.Name = v
+			}
+			if k == "CODE" {
+				user.ZjuId = v
+			}
+		}
+	}
+	return user
 }
 
 func QscProfile2User(pf UserProfileQsc) User {
