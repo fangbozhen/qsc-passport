@@ -99,7 +99,6 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 		return
 	}
 	ss.Set(SS_KEY_ACCESS_TOKEN, tok.AccessToken)
-	ss.Save()
 	zjuUser, ok := getZjuProfile(tok.AccessToken)
 	if !ok {
 		redirectLoginFailed(c, resp.E_INTERNAL_ERROR, "cannot get zju profile")
@@ -109,6 +108,7 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 	user := model.ZjuProfile2User(zjuUser)
 
 	ss.Set(SS_KEY_USER, user)
+	ss.Save()
 
 	fmt.Printf("login success: %s %s", user.Name, user.ZjuId)
 

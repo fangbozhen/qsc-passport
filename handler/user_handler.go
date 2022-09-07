@@ -25,6 +25,7 @@ func GetProfile(c *gin.Context) {
 		resp.Json(c, gin.H{
 			"logined": false,
 		})
+		return
 	}
 	resp.Json(c, gin.H{
 		"logined": true,
