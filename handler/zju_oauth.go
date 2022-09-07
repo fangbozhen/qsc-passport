@@ -128,8 +128,8 @@ func redirectLoginFailed(c *gin.Context, code int, reason string) {
 	query.Set("reason", reason)
 	query.Set("code", strconv.Itoa(code))
 	uri = fmt.Sprintf("%s?%s", uri, query.Encode())
-	logrus.Infof("login failed: [%d] %s", code, reason)
 
+	logrus.Info("redirect to: %s", uri)
 	c.Redirect(302, uri)
 }
 
@@ -141,6 +141,7 @@ func redirectLoginSuccess(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	logrus.Info("redirect to: %s", uri)
 	c.Redirect(302, uri)
 }
 
