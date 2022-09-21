@@ -64,7 +64,7 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 	r, err := httpClient.Get(url)
 
 	if err != nil {
-		fmt.Printf("err: %s", err.Error())
+		logrus.Errorf("err: %s", err.Error())
 		redirectLoginFailed(c, resp.E_INTERNAL_ERROR, "cannot acquire access_token")
 		return
 	}
@@ -110,14 +110,14 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 	ss.Set(SS_KEY_USER, user)
 	ss.Save()
 
-	fmt.Printf("login success: %s %s", user.Name, user.ZjuId)
+	logrus.Infof("login success: %s %s", user.Name, user.ZjuId)
 
 	redirectLoginSuccess(c)
 }
 
 func redirectLoginFailed(c *gin.Context, code int, reason string) {
 	ss := sessions.Default(c)
-	fmt.Printf("login failed: %d %s", code, reason)
+	logrus.Errorf("login failed: %d %s", code, reason)
 	uri, ok := ss.Get(SS_KEY_FAILED_URL).(string)
 	if !ok {
 		logrus.Warn("login failed, but FAILED_URL not set")
