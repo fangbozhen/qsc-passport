@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"passport-v4/database"
 	. "passport-v4/global"
 	"passport-v4/model"
 	"passport-v4/util/resp"
@@ -29,9 +30,23 @@ func GetProfile(c *gin.Context) {
 		})
 		return
 	}
+	if user.LoginType == model.LT_ZJU {
+		logrus.Infof("getting user: %s %s", user.Name, user.ZjuId)
+		resp.Json(c, gin.H{
+			"logined": true,
+			"user":    user,
+		})
+		return
+	}
+	qscuser, err := database.FindByName(user)
+	if err != nil {
+		logrus.Errorf("err: %s", err.Error())
+		resp.Err(c, resp.E_DATABASE_ERROR, "数据库查找失败")
+		return
+	}
 	logrus.Infof("getting user: %s %s", user.Name, user.ZjuId)
 	resp.Json(c, gin.H{
 		"logined": true,
-		"user":    user,
+		"user":    qscuser,
 	})
 }

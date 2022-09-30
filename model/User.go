@@ -18,6 +18,16 @@ type UserProfileZju struct {
 }
 
 type UserProfileQsc struct {
+	Id         string           `json:"id"`
+	PassWord   string           `json:"password"`
+	ZjuId      string           `json:"zjuid"`
+	Name       string           `json:"name" bson:"name"`
+	QscId      string           `json:"qscid" bson:"qscid"`
+	Gender     int              `json:"gender"`
+	Position   string           `json:"position"`
+	Department string           `json:"department"`
+	Status     int              `json:"status"`
+	Privilege  []map[string]int `json:"privilege"`
 }
 
 func ZjuProfile2User(pf UserProfileZju) User {
@@ -40,5 +50,9 @@ func ZjuProfile2User(pf UserProfileZju) User {
 }
 
 func QscProfile2User(pf UserProfileQsc) User {
-	return User{LoginType: LT_QSC}
+	return User{
+		LoginType: LT_QSC,
+		Name:      pf.Name,
+		ZjuId:     pf.ZjuId,
+	}
 }
