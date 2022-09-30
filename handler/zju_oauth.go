@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"passport-v4/config"
+	"passport-v4/database"
 	. "passport-v4/global"
 	"passport-v4/model"
 	"passport-v4/util/resp"
@@ -34,7 +35,6 @@ func ZjuLoginRequest(c *gin.Context) {
 		resp.Err(c, resp.E_WRONG_REQUEST, "参数错误")
 		return
 	}
-
 	ss := sessions.Default(c)
 
 	ss.Set(SS_KEY_SUCCESS_URL, req.SuccessUrl)
@@ -106,7 +106,15 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 	}
 
 	user := model.ZjuProfile2User(zjuUser)
-
+	userdb, err := database.FindByName(user)
+	if err != nil {
+		logrus.Errorf("err: %s", err.Error())
+		resp.Err(c, resp.E_DATABASE_ERROR, "数据库查找失败")
+		return
+	}
+	if userdb.Name == user.Name {
+		user.LoginType = model.LT_QSC
+	}
 	ss.Set(SS_KEY_USER, user)
 	ss.Save()
 

@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	math_rand "math/rand"
 	"os"
 	"passport-v4/config"
+	"passport-v4/database"
 	"passport-v4/model"
 	"passport-v4/server"
 	"time"
@@ -34,11 +35,10 @@ func main() {
 	initLogger()
 	Do(config.Init())
 	Do(model.Init())
-
+	Do(database.Init())
 	e := gin.Default()
 	Do(server.Init(e))
-
-	rand.Seed(time.Hour.Milliseconds())
+	math_rand.Seed(time.Hour.Milliseconds())
 
 	logrus.Infof("Gin Server Started")
 	err := e.Run(fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port))
