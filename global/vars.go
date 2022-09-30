@@ -2,7 +2,8 @@ package global
 
 //MongoDB Collections
 const (
-	COL_USER = "user"
+	COL_QSC_USER     = "qsc_users"
+	COL_IP_WHITELIST = "ip_whitelist"
 )
 
 // gin context

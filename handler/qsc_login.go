@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"passport-v4/database"
 	. "passport-v4/global"
 	"passport-v4/model"
 	"passport-v4/util/resp"
@@ -24,7 +23,7 @@ func QscLogin(c *gin.Context) {
 		resp.Err(c, resp.E_WRONG_REQUEST, "参数错误")
 		return
 	}
-	us, err := database.FindByQscId(model.User{Name: req.Username}) //这里的username实际上是qscid
+	us, err := model.FindUserByQscId(model.User{Name: req.Username}) //这里的username实际上是qscid
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
 		resp.Err(c, resp.E_DATABASE_ERROR, "数据库查找失败")
@@ -51,23 +50,23 @@ func SetPassword(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
 	NewPassWord := c.Query("Password")
-	qscuser, err := database.FindByName(user)
+	qscuser, err := model.FindUserByName(user)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		resp.Err(c, resp.E_DATABASE_ERROR, "数据库查找失败")
+		resp.Err(c, resp.E_DATABASE_ERROR, "找不到用户")
 		return
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(NewPassWord), bcrypt.DefaultCost)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		resp.Err(c, resp.E_DBECRIPT_ERROR, "数据库加密失败")
+		resp.Err(c, resp.E_DBECRIPT_ERROR, "bcrypt加密失败")
 		return
 	}
 	qscuser.PassWord = string(hash)
-	err = database.UpdateUser(qscuser)
+	err = model.UpdateUser(qscuser)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		resp.Err(c, resp.E_DATABASE_ERROR, "数据库更新失败")
+		resp.Err(c, resp.E_DATABASE_ERROR, "更新密码失败")
 		return
 	}
 	resp.Json(c, nil)
@@ -88,7 +87,7 @@ func QscRegister(c *gin.Context) {
 		return
 	}
 	qscuser.PassWord = string(hash)
-	err = database.Insert(qscuser)
+	err = model.InsertUser(qscuser)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
 		resp.Err(c, resp.E_DATABASE_ERROR, "数据库插入失败")

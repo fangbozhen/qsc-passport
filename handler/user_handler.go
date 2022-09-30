@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"passport-v4/database"
 	. "passport-v4/global"
 	"passport-v4/model"
 	"passport-v4/util/resp"
@@ -38,7 +37,7 @@ func GetProfile(c *gin.Context) {
 		})
 		return
 	}
-	qscuser, err := database.FindByName(user)
+	qscuser, err := model.FindUserByName(user)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
 		resp.Err(c, resp.E_DATABASE_ERROR, "数据库查找失败")

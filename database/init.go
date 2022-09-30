@@ -2,16 +2,17 @@ package database
 
 import (
 	"context"
+	"passport-v4/config"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var DB *mongo.Database //储存数据库
+var DB *mongo.Database
+
 func Init() error {
-	uri := "mongodb://127.0.0.1:27017"
-	clientOptions := options.Client().ApplyURI(uri)
+	clientOptions := options.Client().ApplyURI(config.Mongo.Uri)
 	clientOptions.SetConnectTimeout(time.Second * 2)
 	clientOptions.SetSocketTimeout(time.Second * 2)
 	clientOptions.SetServerSelectionTimeout(time.Second * 2)
@@ -28,6 +29,6 @@ func Init() error {
 		return err
 	}
 
-	DB = Client.Database("BBS")
+	DB = Client.Database(config.Mongo.Database)
 	return nil
-} //加载数据库
+}

@@ -17,6 +17,11 @@ type RedisType struct {
 	DB       int
 }
 
+type MongoType struct {
+	Uri      string
+	Database string
+}
+
 type ZjuOauthType struct {
 	ClientID     string
 	ClientSecret string
@@ -27,4 +32,5 @@ type ConfigType struct {
 	Server   ServerType
 	Redis    RedisType
 	ZjuOauth ZjuOauthType
+	Mongo    MongoType
 }
