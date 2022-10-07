@@ -103,21 +103,19 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 		redirectLoginFailed(c, resp.E_INTERNAL_ERROR, "cannot get zju profile")
 		return
 	}
-	// FIXME: ???????? why use user ???
+
 	user := model.ZjuProfile2User(zjuUser)
-	userdb, err := model.FindUserByName(user)
-	if err != nil {
-		logrus.Errorf("err: %s", err.Error())
-		resp.Err(c, resp.E_DATABASE_ERROR, "数据库查找失败")
-		return
-	}
-	if userdb.Name == user.Name {
-		user.LoginType = model.LT_QSC
-	}
-	ss.Set(SS_KEY_USER, user)
-	ss.Save()
 
 	logrus.Infof("login success: %s %s", user.Name, user.ZjuId)
+
+	// 如果是潮人，则继续登录为潮人
+	if qscer, err := model.FindQSCerByZjuid(user.ZjuId); err == nil {
+		logrus.Infof("Zjuer logined as QSCer: %s -> %s", user.Name, qscer.QscId)
+		user = model.QscProfile2User(qscer)
+	}
+
+	ss.Set(SS_KEY_USER, user)
+	ss.Save()
 
 	redirectLoginSuccess(c)
 }
