@@ -22,6 +22,7 @@ const (
 	POS_CONSULTANT = "顾问"
 	POS_MANAGER    = "中管"
 	POS_MASTER     = "高管"
+	POS_ADVANCED   = "高级成员"
 )
 
 // 类型长了golang的自动对齐也太难看了

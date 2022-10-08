@@ -77,11 +77,12 @@ redirect to `success_url` or `failed_url`
 }
 ```
 
-### 求是潮设置密码 /qsc/set_password [GET]
+
+### 求是潮设置密码页面 /qsc/set_password [GET]
 - 成功跳转url：?success=xxx
 
 
-### 求是潮登录API /qsc/login [POST]
+### 求是潮设置密码API /qsc/set_password [POST]
 要求在用户已登录的状态下调用（携带cookie）
 
 - request body
