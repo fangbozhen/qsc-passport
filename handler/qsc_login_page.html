@@ -8,11 +8,17 @@
                 "username": $("#input-username").val(),
                 "password": $("#input-password").val(),
             }
-            var resp = $.ajax(".", {
+            var resp = $.ajax("login", {
                 method: "POST",
-                data: req,
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify(req),
                 success: function(resp) {
-                    window.alert(resp)
+                    if(resp.code!=0){
+                        window.alert(JSON.stringify(resp))
+                        return
+                    }
+                    const params = new URLSearchParams(window.location.search);
+                    window.location.href = params.get("success")
                 }
             })
         }
@@ -22,7 +28,7 @@
     <h1>QSC通行证</h1>
     <h2>简陋版 By<label style="font-size: 10px; zoom: 0.5;color: red;">PTA</label></h2>
     <div style="margin-left: 5px;" >QscId:</div>
-    <input id="input-username" type="text" style="margin: 10px; width: 200px; height: 30px;"/><br/>
+    <input id="input-username" type="text" style="margin: 10px; width: 200px; height: 30px;"/> <br/>
     <div style="margin-left: 5px;" >Password:</div>
     <input id="input-password" type="password" style="margin: 10px; width: 200px; height: 30px;" placeholder="密码默认是qscid"/><br/>
     <button onclick="login()" style="margin-top: 20px;margin-left: 60px; width: 100px;">登录</button> <br/>
