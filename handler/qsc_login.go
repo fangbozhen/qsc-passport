@@ -12,12 +12,6 @@ import (
 )
 
 func QscLoginPage(c *gin.Context) {
-
-	ss := sessions.Default(c)
-
-	ss.Set(SS_KEY_SUCCESS_URL, c.Query("success"))
-	ss.Save()
-
 	c.HTML(200, "qsc_login_page.html", nil)
 }
 
@@ -52,8 +46,16 @@ func QscLoginJson(c *gin.Context) {
 	resp.Json(c, user)
 }
 
-func SetPassword(c *gin.Context) {
+func SetPasswordPage(c *gin.Context) {
+	c.HTML(200, "qsc_set_password.html", nil)
+}
+
+func SetPasswordJson(c *gin.Context) {
 	ss := sessions.Default(c)
+	if ss.Get(SS_KEY_USER) == nil {
+		resp.Err(c, resp.E_AUTH_FAILED, "未登录！")
+		return
+	}
 	user := ss.Get(SS_KEY_USER).(model.User)
 	if user.LoginType != model.LT_QSC || user.QscUser == nil {
 		logrus.Warn("LoginType Error")

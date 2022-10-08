@@ -9,7 +9,7 @@
                 "username": $("#input-username").val(),
                 "password": $("#input-password").val(),
             }
-            var resp = $.ajax("login", {
+            $.ajax("login", {
                 method: "POST",
                 contentType: "application/json;charset=utf-8",
                 data: JSON.stringify(req),

@@ -20,7 +20,10 @@
 - code  错误代码，0表示成功
 - err   错误提示信息，成功时为空
 
-### 求是潮登录 /qsc/login [POST]
+### 求是潮登录网页 /qsc/login [GET]
+- 成功跳转url：?success=xxx
+
+### 求是潮登录API /qsc/login [POST]
 - request body
 ```json
 {
@@ -73,6 +76,20 @@ redirect to `success_url` or `failed_url`
     }
 }
 ```
+
+### 求是潮设置密码 /qsc/set_password [GET]
+- 成功跳转url：?success=xxx
+
+
+### 求是潮登录API /qsc/login [POST]
+要求在用户已登录的状态下调用（携带cookie）
+
+- request body
+```json
+{
+    "password": "abcabc",
+}
+- 成功无data返回，code=0
 
 ## 四、版本说明
 
