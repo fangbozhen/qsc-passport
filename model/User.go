@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"time"
 
 	"passport-v4/database"
 	. "passport-v4/global"
@@ -13,6 +14,14 @@ import (
 const (
 	LT_ZJU = "zju"
 	LT_QSC = "qsc"
+)
+
+const (
+	POS_INTERN     = "实习成员"
+	POS_NORMAL     = "正式成员"
+	POS_CONSULTANT = "顾问"
+	POS_MANAGER    = "中管"
+	POS_MASTER     = "高管"
 )
 
 // 类型长了golang的自动对齐也太难看了
@@ -34,15 +43,16 @@ type UserProfileZju struct {
 }
 
 type UserProfileQsc struct {
-	Password   string `json:"-" bson:"Password"` // hashed
-	ZjuId      string `json:"zjuid" bson:"ZjuId"`
-	Name       string `json:"name" bson:"Name"`
-	QscId      string `json:"qscid" bson:"QscId"`
-	Gender     string `json:"gender" bson:"Gender"`
-	Position   string `json:"position" bson:"Position"`
-	Department string `json:"department" bson:"Department"`
-	Status     string `json:"status" bson:"Status"`
-	Privilege  smap   `json:"privilege" bson:"Privilege"`
+	Password   string    `json:"-" bson:"Password"` // hashed
+	ZjuId      string    `json:"zjuid" bson:"ZjuId"`
+	Name       string    `json:"name" bson:"Name"`
+	QscId      string    `json:"qscid" bson:"QscId"`
+	Gender     string    `json:"gender" bson:"Gender"`
+	Position   string    `json:"position" bson:"Position"`
+	Department string    `json:"department" bson:"Department"`
+	Status     string    `json:"status" bson:"Status"`
+	JoinTime   time.Time `json:"jointime" bson:"JoinTime"`
+	Privilege  smap      `json:"privilege" bson:"Privilege"`
 }
 
 func ZjuProfile2User(pf UserProfileZju) User {

@@ -28,7 +28,7 @@ RUN apt-get update \
 
 COPY --from=builder /passport-v4-server /passport-v4-server
 COPY config.yml /
-COPY handler/redirect.html /handler/
+COPY handler/*.html /handler/
 
 EXPOSE 8000
 ENTRYPOINT ["/passport-v4-server"]

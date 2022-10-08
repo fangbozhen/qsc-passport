@@ -11,7 +11,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func QscLogin(c *gin.Context) {
+func QscLoginPage(c *gin.Context) {
+
+	ss := sessions.Default(c)
+
+	ss.Set(SS_KEY_SUCCESS_URL, c.Query("success"))
+	ss.Save()
+
+	c.HTML(200, "qsc_login_page.html", nil)
+}
+
+func QscLoginJson(c *gin.Context) {
 	var req struct {
 		Username string
 		Password string

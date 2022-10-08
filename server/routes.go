@@ -13,6 +13,7 @@ func Ping(c *gin.Context) {
 
 func configRoutes(e *gin.Engine) {
 	e.LoadHTMLFiles("handler/redirect.html")
+	e.LoadHTMLFiles("handler/qsc_login_page.html")
 
 	root := e.Group("/", midware.Response)
 	// internal := root.Group("/", IPWhiteList())
@@ -20,7 +21,8 @@ func configRoutes(e *gin.Engine) {
 
 	root.GET("/zju/login", handler.ZjuLoginRequest)
 	root.GET("/zju/login_success", handler.ZjuOauthCodeReturn)
-	root.POST("/qsc/login", handler.QscLogin)
+	root.POST("/qsc/login", handler.QscLoginJson)
+	root.GET("/qsc/login", handler.QscLoginPage)
 	// internal.POST("/qsc/set_password", handler.SetPassword)
 	root.GET("/logout", handler.Logout)
 	root.GET("/profile", handler.GetProfile)
