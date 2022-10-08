@@ -1,7 +1,7 @@
 FROM golang:1.17-bullseye AS builder
 
 ENV \
-	GOPROXY=https://goproxy.io \
+	GOPROXY=https://goproxy.io,direct \
 	GO111MODULE=on \
 	CGO_ENABLED=0 \
 	GIN_MODE=release
@@ -10,7 +10,8 @@ WORKDIR /workdir/
 
 COPY go.mod go.sum ./
 
-RUN go mod download
+RUN go env -w GOPROXY=https://goproxy.io,direct \
+	&& go mod download -json
 
 COPY . ./
 
