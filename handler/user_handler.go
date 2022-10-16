@@ -14,8 +14,10 @@ func Logout(c *gin.Context) {
 
 	ss := sessions.Default(c)
 	ss.Clear()
+	ss.Options(sessions.Options{
+		MaxAge: -1,
+	})
 	ss.Save()
-
 	resp.Json(c, nil)
 }
 
