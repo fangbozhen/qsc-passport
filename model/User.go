@@ -16,6 +16,7 @@ const (
 	LT_QSC = "qsc"
 )
 
+// enum Position
 const (
 	POS_INTERN     = "实习成员"
 	POS_NORMAL     = "正式成员"
@@ -33,7 +34,7 @@ type ssmap map[string]string
 type User struct {
 	Name      string          `json:"Name"`
 	ZjuId     string          `json:"ZjuId"`
-	LoginType string          `json:"LoginType"`
+	LoginType string          `json:"LoginType"` // @see enum LoginType
 	QscUser   *UserProfileQsc `json:"QscUser,omitempty"`
 }
 
@@ -49,11 +50,12 @@ type UserProfileQsc struct {
 	Name       string    `json:"name" bson:"Name"`
 	QscId      string    `json:"qscid" bson:"QscId"`
 	Gender     string    `json:"gender" bson:"Gender"`
-	Position   string    `json:"position" bson:"Position"`
-	Department string    `json:"department" bson:"Department"`
-	Status     string    `json:"status" bson:"Status"`
-	JoinTime   time.Time `json:"jointime" bson:"JoinTime"`
-	Privilege  smap      `json:"privilege" bson:"Privilege"`
+	Position   string    `json:"position" bson:"Position"`     // 身份 @see enum Position
+	Department string    `json:"department" bson:"Department"` // 部门
+	Direction  string    `json:"direction" bson:"Direction"`   // 部门下分方向
+	Status     string    `json:"status" bson:"Status"`         // 状态【保留】
+	JoinTime   time.Time `json:"jointime" bson:"JoinTime"`     // 注意读出是GMT
+	Privilege  smap      `json:"privilege" bson:"Privilege"`   // 权限组【保留】
 }
 
 func ZjuProfile2User(pf UserProfileZju) User {

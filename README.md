@@ -1,16 +1,32 @@
-# 求是潮通行证 Ver.3
+# 求是潮通行证 Passport v4
 
 ## 一、产品简介
 
-为求是潮web产品提供登录服务
+为求是潮web产品提供登录服务，并管理qsc内部人员数据的后台
 
 ## 二、功能需求
 
 - 通过求是潮账号登陆
 - 通过浙大统一认证登录
 - 查询用户信息
+- 修改潮人的人资数据
 
 ## 三、接口说明
+
+### 关于Model
+
+具体定义参考 [model/User.go](model/User.go)
+- struct User
+  - 保存通用用户信息
+  - 包括用户是否潮人
+  - 潮人包含潮人数据
+- struct UserProfileQsc
+  - 潮人数据，存入数据库的对象
+  - 以QscId做唯一主键
+  - 字段可能会随需求有「增加」，理论上会兼容设计
+- enum Position
+  - 成员身份，也可能会有增加
+- enum LoginType
 
 ### 关于cookie
 身份验证基于cookie实现，理论上在同一个域名下的服务可以共享登录状态
@@ -91,7 +107,3 @@ redirect to `success_url` or `failed_url`
     "password": "abcabc",
 }
 - 成功无data返回，code=0
-
-## 四、版本说明
-
-## 五、流程规划
