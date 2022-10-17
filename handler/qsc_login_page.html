@@ -24,7 +24,7 @@
             })
         }
         function jump_zju() {
-            window.location.href = "../zju/login"
+            window.location.href = "../zju/login" + window.location.search
         }
     </script>
 </head>
@@ -39,7 +39,7 @@
             <input id="input-username" type="text" style="margin: 10px; width: 200px; height: 30px;" /> <br />
             <div style="margin-left: 5px;">Password:</div>
             <input id="input-password" type="password" style="margin: 10px; width: 200px; height: 30px;"
-                placeholder="密码默认是qscid" /><br />
+                placeholder="密码默认是学号" /><br />
 
             <button class="btn" onclick="login()" style="margin-top: 20px;margin-left: 60px; width: 100px;">登录</button>
             <br />
