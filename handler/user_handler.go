@@ -18,7 +18,16 @@ func Logout(c *gin.Context) {
 		MaxAge: -1,
 	})
 	ss.Save()
-	resp.Json(c, nil)
+
+	success_url := c.Query("success")
+	if success_url != "" {
+		// 302 会导致Cookie丢失
+		c.HTML(200, "redirect.html", gin.H{
+			"href": success_url,
+		})
+	} else {
+		resp.Json(c, nil)
+	}
 }
 
 func GetProfile(c *gin.Context) {
