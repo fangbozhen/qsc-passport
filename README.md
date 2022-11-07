@@ -38,7 +38,8 @@
 
 ### 求是潮登录网页 /qsc/login [GET]
 - 成功跳转url：?success=xxx
-
+- 【注】跳转URL会添加SESSION_TOKEN=xxx，其值与Header中相同
+  
 ### 求是潮登录API /qsc/login [POST]
 - request body
 ```json
@@ -70,6 +71,7 @@
     - failed_url重定向时会携带query参数：错误码code和错误信息reason
 - request query:    success=AAA&fail=BBB
 - response [302]
+  - 【注】跳转URL会添加SESSION_TOKEN=xxx，其值与Header中相同
 redirect to zjuam
 
 ### 浙大登录后重定向地址 /zju/login_success [GET;不需要主动调用]
