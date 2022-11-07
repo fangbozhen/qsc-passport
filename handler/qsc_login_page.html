@@ -22,9 +22,13 @@
                         return
                     }
                     const params = new URLSearchParams(window.location.search);
-                    var url = new URL(params.get("success"))
-                    url.searchParams.append("SESSION_TOKEN", $.cookie("SESSION_TOKEN"))
-                    window.location.href = url.toString()
+                    if(params.get("success")){
+                        var url = new URL(params.get("success"))
+                        url.searchParams.append("SESSION_TOKEN", $.cookie("SESSION_TOKEN"))
+                        window.location.href = url.toString()
+                    }else{
+                        alert("登录成功！")
+                    }
                 }
             })
         }
