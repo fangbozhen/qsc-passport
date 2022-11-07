@@ -25,7 +25,7 @@ func initSession(e *gin.Engine) error {
 		Domain:   config.Server.Domain,
 		MaxAge:   config.Server.SessionExpire,
 		Secure:   true,
-		HttpOnly: true,
+		HttpOnly: false,
 		SameSite: http.SameSiteLaxMode,
 	}
 	if gin.Mode() != gin.ReleaseMode {

@@ -146,6 +146,13 @@ func redirectLoginSuccess(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	url, _ := url.Parse(uri)
+	cookie, _ := c.Request.Cookie("SESSION_TOKEN")
+	query := url.Query()
+	query.Add("SESSION_TOKEN", cookie.Value)
+	url.RawQuery = query.Encode()
+	uri = url.String()
+
 	logrus.Info("redirect to: %s", uri)
 	c.Redirect(302, uri)
 }

@@ -2,8 +2,11 @@
 <html>
 
 <head>
-    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
     <script>
+    
         function login() {
             var req = {
                 "username": $("#input-username").val(),
@@ -19,7 +22,9 @@
                         return
                     }
                     const params = new URLSearchParams(window.location.search);
-                    window.location.href = params.get("success")
+                    var url = new URL(params.get("success"))
+                    url.searchParams.append("SESSION_TOKEN", $.cookie("SESSION_TOKEN"))
+                    window.location.href = url.toString()
                 }
             })
         }
