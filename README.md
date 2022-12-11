@@ -1,34 +1,60 @@
 # 求是潮通行证 Passport v4
 
-## 一、产品简介
+## 产品简介
 
 为求是潮web产品提供登录服务，并管理qsc内部人员数据的后台
 
-## 二、功能需求
+## 功能需求
 
 - 通过求是潮账号登陆
 - 通过浙大统一认证登录
 - 查询用户信息
 - 修改潮人的人资数据
 
-## 三、接口说明
+## 接口说明
 
-### 关于Model
+### Model
 
-具体定义参考 [model/User.go](model/User.go)
-- struct User
-  - 保存通用用户信息
-  - 包括用户是否潮人
-  - 潮人包含潮人数据
-- struct UserProfileQsc
-  - 潮人数据，存入数据库的对象
-  - 以QscId做唯一主键
-  - 字段可能会随需求有「增加」，理论上会兼容设计
-- enum Position
-  - 成员身份，也可能会有增加
-- enum LoginType
+```typescript
+// 别问我为什么外面是大写里面是小写首字母，问就是兼容
+interface User {
+  Name: string          // 真实姓名
+  ZjuId: string         // 学号
+  LoginType: LoginType  // 用户类型
+  
+  // 对非潮人为null
+  QscUser?: {
+    zjuid: string       // 兼容性设计，与`User.ZjuId`相同
+    name: string        // 兼容性设计，与`User.Name`相同
+    qscid: string       // Qsc Id，注意区分大小写
+    gender: string      // 性别 enum {"男", "女"}
+    position: Position  // 身份
+    department: string  // 部门
+    direction: string   // 部门下分方向
+    jointime: string    // RFC3339 注意读出是GMT
+    status: string      // 状态【保留】
+    privilege: string   // 权限组【保留】
+  }
+}
+
+enum LoginType {
+	LT_ZJU = "zju",
+	LT_QSC = "qsc",
+}
+
+enum Position {
+	POS_INTERN     = "实习成员",
+	POS_NORMAL     = "正式成员",
+	POS_CONSULTANT = "顾问",
+	POS_MANAGER    = "中管",
+	POS_MASTER     = "高管",
+	POS_ADVANCED   = "高级成员",
+}
+
+```
 
 ### 关于cookie
+
 身份验证基于cookie实现，理论上在同一个域名下的服务可以共享登录状态
 如果是在后台调用`/qsc/login`，则必须手动处理cookie缓存（至少golang默认不保存cookie）
 
@@ -37,10 +63,12 @@
 - err   错误提示信息，成功时为空
 
 ### 求是潮登录网页 /qsc/login [GET]
+
 - 成功跳转url：?success=xxx
 - 【注】跳转URL会添加SESSION_TOKEN=xxx，其值与Header中相同
   
 ### 求是潮登录API /qsc/login [POST]
+
 - request body
 ```json
 {
@@ -53,11 +81,12 @@
 {
     "code": 0,
     "err": "",
-    "data": $user
+    "data": User
 }
 ```
 
 ### 浙大统一认证登录 /zju/login [GET]
+
 - 认证流程
     - 浏览器端访问此API
     - 返回302重定向，进入浙大统一认证页面
@@ -72,7 +101,7 @@
 - request query:    success=AAA&fail=BBB
 - response [302]
   - 【注】跳转URL会添加SESSION_TOKEN=xxx，其值与Header中相同
-redirect to zjuam
+  redirect to zjuam
 
 ### 浙大登录后重定向地址 /zju/login_success [GET;不需要主动调用]
 - query `code=abcabc` （zjuam自动回传）
@@ -90,7 +119,7 @@ redirect to `success_url` or `failed_url`
     "err": "",
     "data": {
         "logined": true,
-        "user": $user
+        "user": User,
     }
 }
 ```
@@ -108,4 +137,6 @@ redirect to `success_url` or `failed_url`
 {
     "password": "abcabc",
 }
+```
+
 - 成功无data返回，code=0
