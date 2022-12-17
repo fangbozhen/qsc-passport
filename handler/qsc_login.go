@@ -75,7 +75,7 @@ func SetPasswordJson(c *gin.Context) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		resp.Err(c, resp.E_DBECRIPT_ERROR, "bcrypt加密失败")
+		resp.Err(c, resp.E_INTERNAL_ERROR, "bcrypt加密失败")
 		return
 	}
 	user.QscUser.Password = string(hash)
@@ -99,7 +99,7 @@ func QscRegister(c *gin.Context) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(qscuser.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logrus.Errorf("err: %s", err.Error())
-		resp.Err(c, resp.E_DBECRIPT_ERROR, "加密失败")
+		resp.Err(c, resp.E_INTERNAL_ERROR, "加密失败")
 		return
 	}
 	qscuser.Password = string(hash)
