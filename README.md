@@ -2,7 +2,9 @@
 
 ## 功能
 
- - [ ] 潮人登录
+**后端登录模块直接使用pta的passportv4的部分**
+
+ - [x] 潮人登录
    - [ ] QSCid登录
    - [ ] 浙大统一认证登录
    - [ ] 修改密码
@@ -32,6 +34,20 @@ type (
       Birthday   time.Time `json:"birthday"`
       JoinTime   time.Time `json:"jointime"`
    }
+)
+```
+
+## Json格式
+
+### 错误代码
+```go
+const (
+	AuthFailedError    = 10001 // 未登录
+	InternalError      = 10002 // passport内部错误
+	WrongRequestError  = 10003 // 参数错误
+	WrongPasswordError = 10004 // 密码错误
+	WrongUsernameError = 10005
+	DatabaseError      = 10006 // db炸了
 )
 ```
 
@@ -87,13 +103,13 @@ response
 }
 ```
 
-#### 修改密码API /reset-password [GET]
+#### 修改密码API /qsc/reset-password [GET]
 
 提供修改密码服务
 
-输入原密码，新密码，重复输入新密码（前端验证是否相同）
+输入原密码，新密码，重复输入新密码
 
-#### 修改密码API /reset-password [POST]
+#### 修改密码API /qsc/reset-password [POST]
 
 request body
 ```json

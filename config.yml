@@ -1,0 +1,22 @@
+Server:
+  Host: ""
+  Port: 3000
+  SessionSecretString: "123456"
+
+  # For Cookie, like ".qsc.zju.edu.cn"
+  Domain: ".qsc.zju.edu.cn"
+
+  # End with NO '/'
+  # Used for 302 redirect.
+  UrlPrefix: "https://xxx.com/yyy"
+  SessionExpire: 604800 # 3600*24*7
+
+Redis:
+  Host: "redis"
+  Port: 6379
+  Password: ""
+  DB: 0
+
+Mongo:
+  Uri: "localhost"
+  Database: "my_db"
