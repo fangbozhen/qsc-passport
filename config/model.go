@@ -1,4 +1,4 @@
-package conf
+package config
 
 type ServerType struct {
 	Host                string
@@ -22,8 +22,15 @@ type MongoType struct {
 	Database string
 }
 
+type ZjuOauthType struct {
+	ClientID     string
+	ClientSecret string
+	SsoUrl       string
+}
+
 type ConfigType struct {
-	Server ServerType
-	Redis  RedisType
-	Mongo  MongoType
+	Server   ServerType
+	Redis    RedisType
+	Mongo    MongoType
+	ZjuOauth ZjuOauthType
 }

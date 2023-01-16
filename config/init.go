@@ -1,4 +1,4 @@
-package conf
+package config
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	Server ServerType
-	Redis  RedisType
-	Mongo  MongoType
+	Server   ServerType
+	Redis    RedisType
+	Mongo    MongoType
+	ZjuOauth ZjuOauthType
 )
 
 func Init() {
@@ -16,7 +17,7 @@ func Init() {
 	config := ConfigType{}
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")
-	viper.SetConfigName("yaml")
+	viper.SetConfigType("yaml")
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -33,6 +34,7 @@ func Init() {
 	Server = config.Server
 	Redis = config.Redis
 	Mongo = config.Mongo
+	ZjuOauth = config.ZjuOauth
 
 	log.Info("[Config] Init success")
 }

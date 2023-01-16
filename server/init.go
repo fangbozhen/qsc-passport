@@ -1,8 +1,9 @@
 package server
 
 import (
-	"QSCpassport/conf"
+	"QSCpassport/config"
 	"QSCpassport/server/handlers"
+	"QSCpassport/server/middleware"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
@@ -14,38 +15,39 @@ import (
 )
 
 func configRoutes(r *gin.Engine) {
+
+	r.Use(middleware.Response)
 	r.GET("/ping", handlers.Ping)
 
-	r.GET("/qsc/login")
 	r.POST("/qsc/login", handlers.QscLoginJson)
-	r.GET("/qsc/reset-password")
-	r.POST("/qsc/reset-password")
+	r.POST("/qsc/reset-password", handlers.SetPasswordJson)
 
-	r.GET("/zju/login")
+	r.GET("/zju/login", handlers.ZjuOauthRequest)
+	r.GET("/zju/login-success", handlers.ZjuOauthCodeReturn)
 
-	r.GET("/logout")
-	r.GET("/users/:id")
+	r.GET("/logout", handlers.Logout)
+	r.GET("/profile", handlers.GetProfile)
 
-	admin := r.Group("/admin")
-	{
-		admin.GET("/login")
-		admin.POST("/login")
-		admin.GET("/index")
-	}
+	//admin := r.Group("/admin")
+	//{
+	//	admin.GET("/login")
+	//	admin.POST("/login")
+	//	admin.GET("/index")
+	//}
 }
 
 func initSession(r *gin.Engine) {
 	log.Info("[Server] Session Init...")
-	cfg := conf.Redis
+	cfg := config.Redis
 	uri := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	store, err := redis.NewStoreWithDB(1000, "tcp", uri, cfg.Password, strconv.Itoa(cfg.DB), conf.Server.SessionSecret)
+	store, err := redis.NewStoreWithDB(1000, "tcp", uri, cfg.Password, strconv.Itoa(cfg.DB), config.Server.SessionSecret)
 	if err != nil {
 		log.Fatalf("Cannot connect to Redis: %s", err.Error())
 	}
 	opt := sessions.Options{
 		Path:     "/",
-		Domain:   conf.Server.Domain,
-		MaxAge:   conf.Server.SessionExpire,
+		Domain:   config.Server.Domain,
+		MaxAge:   config.Server.SessionExpire,
 		Secure:   true,
 		HttpOnly: false,
 		SameSite: http.SameSiteLaxMode,
@@ -59,7 +61,7 @@ func initSession(r *gin.Engine) {
 }
 
 func initCors(r *gin.Engine) {
-	cors_cfg := cors.Config{
+	corsCfg := cors.Config{
 		AllowOrigins:     []string{"https://www.qsc.zju.edu.cn"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
@@ -67,7 +69,7 @@ func initCors(r *gin.Engine) {
 		MaxAge:           3600,
 		ExposeHeaders:    []string{"Authorization", "Set-Cookie"},
 	}
-	r.Use(cors.New(cors_cfg))
+	r.Use(cors.New(corsCfg))
 }
 
 func Init(r *gin.Engine) {

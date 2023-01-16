@@ -1,6 +1,7 @@
 package database
 
 import (
+	"QSCpassport/config"
 	"context"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -8,16 +9,15 @@ import (
 	"time"
 )
 
-var mgoCli *mongo.Client
+var DB *mongo.Database
 
-func initDb() {
-	var err error
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+func InitDb() {
+	clientOptions := options.Client().ApplyURI(config.Mongo.Uri)
 	clientOptions.SetConnectTimeout(time.Second * 2)
 	clientOptions.SetConnectTimeout(time.Second * 2)
 	clientOptions.SetServerSelectionTimeout(time.Second * 2)
 
-	mgoCli, err = mongo.Connect(context.TODO(), nil)
+	mgoCli, err := mongo.Connect(context.TODO(), nil)
 	if err != nil {
 		log.Fatalf("Error while connecting to MongoDB: %s", err)
 	}
@@ -26,11 +26,6 @@ func initDb() {
 	if err != nil {
 		log.Fatalf("Error in ping to mgoCli: %s", err)
 	}
-}
 
-func MgoCli() *mongo.Client {
-	if mgoCli == nil {
-		initDb()
-	}
-	return mgoCli
+	DB = mgoCli.Database(config.Mongo.Database)
 }

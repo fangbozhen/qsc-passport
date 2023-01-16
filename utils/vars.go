@@ -1,12 +1,11 @@
 package utils
 
-//MongoDB Collections
+// CollectionQscUsers MongoDB Collections
 const (
 	CollectionQscUsers = "qsc_users"
-	COL_IP_WHITELIST   = "ip_whitelist"
 )
 
-// gin context
+// CtxResponse gin context
 const (
 	CtxResponse = "resp"
 )

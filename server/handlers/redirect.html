@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<header>
+    <meta charset="UTF-8">
+    <title>重定向</title>
+    <!-- 因为直接302会导致cookie保存失败，所以采用html内嵌js跳转 -->
+</header>
+
+<body>
+    <script>
+        window.location.href = "{{ .href }}";
+    </script>
+</body>

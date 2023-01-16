@@ -1,6 +1,7 @@
 package main
 
 import (
+	"QSCpassport/database"
 	"QSCpassport/server"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -9,8 +10,8 @@ import (
 	"os"
 	"time"
 
-	"QSCpassport/conf"
-	"QSCpassport/models"
+	"QSCpassport/config"
+	"QSCpassport/model"
 )
 
 func initLogger() {
@@ -24,15 +25,16 @@ func initLogger() {
 
 func main() {
 	initLogger()
-	conf.Init()
-	models.Init()
+	config.Init()
+	model.Init()
+	database.InitDb()
 	router := gin.Default()
 	server.Init(router)
 
 	rand.Seed(time.Hour.Milliseconds())
 
 	log.Info("Gin Server Started")
-	err := router.Run(fmt.Sprintf("%s:%d", conf.Server.Host, conf.Server.Port))
+	err := router.Run(fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port))
 	if err != nil {
 		log.Errorf("Error while running Server: %s", err.Error())
 		os.Exit(-1)
