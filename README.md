@@ -104,17 +104,24 @@ request
 
 ```json
 {
-    "pageNumber": , // 从0开始
-    "pageSize" ,  
-    "filter": $user, 
-    "sortby": {
-    	"col":,
+    "pageNumber":"", // 从1开始
+    "pageSize":"" ,  
+    "filter":{
+      "selector1": "",
+      "selector2": "",
+      // ...返回的是所有的selector的交集
+    }, 
+    "sortBy": {
+    	"col":"",
     	"isDescend": boolean //0升序，1降序
 	}
 }
 ```
+- 注意：写filter的时候每一个键值对的Key都要和 UserProfileQsc(api文档最前面)里面定义的一样，不然会检索不到
+- 比如要检索还健在的潮人，应该输入 "Status":"alive"，而不是status
+- 在比如检索qscid的时候，是QscId 而不是 Qscid
 
-reponse
+response
 
 ```json
 {
@@ -122,6 +129,19 @@ reponse
    "err": "",
    "data": $userarray, //返回一个User数组，包含要呈现的User信息
 }
+```
+- example: 返回是这样的
+```json
+{
+  "code": "",
+  "err": "",
+  "data":{
+    "users": {
+      [{user1},{user2},{user3}]
+    }
+  }
+}
+
 ```
 
 #### /user/updateOne [POST]
