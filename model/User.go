@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -166,4 +167,20 @@ func DeleteByQscId(qscid string) error {
 		return errors.New(fmt.Sprintf("user %s not found", qscid))
 	}
 	return err
+}
+
+func FindInPages(selector interface{}, limit, page int64, isDescend bool) (users []UserProfileQsc, err error) {
+	col := database.DB.Collection(utils.CollectionQscUsers)
+	findOptions := options.Find()
+	findOptions.SetSkip(page*limit - limit)
+	findOptions.SetLimit(limit)
+	if !isDescend {
+		findOptions.SetSort(bson.D{{"_id", -1}})
+	}
+	cur, err := col.Find(ctx, selector, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	err = cur.All(ctx, &users)
+	return
 }
