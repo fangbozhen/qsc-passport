@@ -39,7 +39,7 @@ func QscLoginJson(c *gin.Context) {
 
 	user := model.QscProfile2User(qscer)
 	ss := sessions.Default(c)
-	ss.Set(utils.SessionKeyUser, qscer)
+	ss.Set(utils.SessionKeyUser, user)
 	ss.Save()
 	resp.Json(c, user)
 }
