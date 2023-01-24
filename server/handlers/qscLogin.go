@@ -12,7 +12,7 @@ import (
 
 func QscLoginJson(c *gin.Context) {
 	var req struct {
-		QscId    string `json:"qscid"`
+		QscId    string `json:"Qscid"`
 		Password string `json:"password"`
 	}
 
@@ -22,7 +22,7 @@ func QscLoginJson(c *gin.Context) {
 		resp.Err(c, resp.WrongRequestError, "参数错误")
 		return
 	}
-	
+
 	qscer, err := model.FindQSCerByQscId(req.QscId)
 	if err != nil {
 		log.Errorf("Request Error: %s", err.Error())

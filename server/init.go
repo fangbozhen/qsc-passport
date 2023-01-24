@@ -28,12 +28,13 @@ func configRoutes(r *gin.Engine) {
 	r.GET("/logout", handlers.Logout)
 	r.GET("/profile", handlers.GetProfile)
 
-	//admin := r.Group("/admin")
-	//{
-	//	admin.GET("/login")
-	//	admin.POST("/login")
-	//	admin.GET("/index")
-	//}
+	admin := r.Group("/admin")
+	{
+		admin.POST("/user/upload", handlers.Upload)
+		admin.POST("/user/updateone", handlers.UpdateOne)
+		admin.POST("/user/updatemany", handlers.UpdateMany)
+		admin.POST("/user/delete", handlers.Delete)
+	}
 }
 
 func initSession(r *gin.Engine) {

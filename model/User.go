@@ -4,6 +4,8 @@ import (
 	"QSCpassport/database"
 	"QSCpassport/utils"
 	"context"
+	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"time"
 )
@@ -58,8 +60,9 @@ type UserProfileQsc struct {
 	Status     string    `json:"status" bson:"Status"`
 	Phone      string    `json:"phone" bson:"Phone"`
 	Email      string    `json:"email" bson:"Email"`
-	Birthday   time.Time `json:"birthday" bson:"Birthday"`
-	JoinTime   time.Time `json:"jointime" bson:"JoinTime"`
+	Note       string    `json:"note" bson:"Note"`
+	Birthday   time.Time `json:"birthday,omitempty" bson:"Birthday"`
+	JoinTime   time.Time `json:"jointime,omitempty" bson:"JoinTime"`
 }
 
 func ZjuProfile2User(pf UserProfileZju) User {
@@ -113,8 +116,54 @@ func UpdateQSCer(user1 UserProfileQsc) error {
 	return res.Err()
 }
 
+func checkUser(user *UserProfileQsc, DBUser *UserProfileQsc) {
+	if user.Password == "" {
+		user.Password = DBUser.Password
+	}
+	if user.Birthday.IsZero() {
+		user.Birthday = DBUser.Birthday
+	}
+	if user.JoinTime.IsZero() {
+		user.JoinTime = DBUser.JoinTime
+	}
+}
+
+func UpdataOneByQscId(qscid string, user UserProfileQsc) error {
+	var DBUser UserProfileQsc
+	col := database.DB.Collection(utils.CollectionQscUsers)
+	err := col.FindOne(ctx, bson.M{"QscId": qscid}).Decode(&DBUser)
+	if err != nil {
+		return err
+	}
+	checkUser(&user, &DBUser)
+	res := col.FindOneAndReplace(ctx, bson.M{"QscId": qscid}, user)
+	return res.Err()
+}
+
+func UpdateOne(qscid string, department string, position string) error {
+	col := database.DB.Collection(utils.CollectionQscUsers)
+	filter := bson.M{"QscId": qscid}
+	var update bson.M
+	if department == "" {
+		update = bson.M{"$set": bson.M{"Position": position}}
+	} else {
+		update = bson.M{"$set": bson.M{"Department": department}}
+	}
+	_, err := col.UpdateMany(ctx, filter, update)
+	return err
+}
+
 func InsertQSCer(user UserProfileQsc) error {
 	col := database.DB.Collection(utils.CollectionQscUsers)
 	_, err := col.InsertOne(ctx, user)
+	return err
+}
+
+func DeleteByQscId(qscid string) error {
+	col := database.DB.Collection(utils.CollectionQscUsers)
+	res, err := col.DeleteOne(ctx, bson.M{"QscId": qscid})
+	if res.DeletedCount == 0 {
+		return errors.New(fmt.Sprintf("user %s not found", qscid))
+	}
 	return err
 }

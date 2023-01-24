@@ -33,15 +33,15 @@ func GetProfile(c *gin.Context) {
 	ss := sessions.Default(c)
 	user, ok := ss.Get(utils.SessionKeyUser).(model.User)
 	if !ok {
-		logrus.Errorf("user not logined!")
+		logrus.Errorf("User not logined!")
 		resp.Json(c, gin.H{
 			"logined": false,
 		})
 		return
 	}
-	logrus.Infof("getting user: %s %s", user.Name, user.ZjuId)
+	logrus.Infof("getting User: %s %s", user.Name, user.ZjuId)
 	resp.Json(c, gin.H{
 		"logined": true,
-		"user":    user,
+		"User":    user,
 	})
 }
