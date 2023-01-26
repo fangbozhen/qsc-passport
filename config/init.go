@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/base64"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -36,5 +37,10 @@ func Init() {
 	Mongo = config.Mongo
 	ZjuOauth = config.ZjuOauth
 
+	Server.SessionSecret = make([]byte, 1000)
+	_, err = base64.RawStdEncoding.Decode(Server.SessionSecret, []byte(Server.SessionSecretString))
+	if err != nil {
+		log.Warnf("SessionSecret set failed: %s", err)
+	}
 	log.Info("[Config] Init success")
 }

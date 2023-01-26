@@ -40,7 +40,10 @@ func QscLoginJson(c *gin.Context) {
 	user := model.QscProfile2User(qscer)
 	ss := sessions.Default(c)
 	ss.Set(utils.SessionKeyUser, user)
-	ss.Save()
+	err = ss.Save()
+	if err != nil {
+		log.Error(err)
+	}
 	resp.Json(c, user)
 }
 
@@ -51,7 +54,7 @@ func SetPasswordJson(c *gin.Context) {
 		return
 	}
 	user := ss.Get(utils.SessionKeyUser).(model.User)
-	if user.LoginType != model.LoginZJU || user.QscUser == nil {
+	if user.LoginType != model.LoginQSC || user.QscUser == nil {
 		log.Warn("LoginType Error")
 		resp.Err(c, resp.AuthFailedError, "not qscer")
 		return

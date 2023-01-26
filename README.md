@@ -52,7 +52,7 @@ request
 
 ```json
 {
-    "username": "321010xxxx",
+    "Qscid": "321010xxxx",
     "password": "abcabc",
 }
 ```

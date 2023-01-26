@@ -21,7 +21,6 @@ func configRoutes(r *gin.Engine) {
 
 	r.POST("/qsc/login", handlers.QscLoginJson)
 	r.POST("/qsc/reset-password", handlers.SetPasswordJson)
-	r.GET("/user/list", handlers.GetByPage)
 
 	r.GET("/zju/login", handlers.ZjuOauthRequest)
 	r.GET("/zju/login-success", handlers.ZjuOauthCodeReturn)
@@ -29,12 +28,13 @@ func configRoutes(r *gin.Engine) {
 	r.GET("/logout", handlers.Logout)
 	r.GET("/profile", handlers.GetProfile)
 
-	admin := r.Group("/admin")
+	admin := r.Group("/admin", middleware.AdminCheck)
 	{
 		admin.POST("/user/upload", handlers.Upload)
 		admin.POST("/user/updateone", handlers.UpdateOne)
 		admin.POST("/user/updatemany", handlers.UpdateMany)
 		admin.POST("/user/delete", handlers.Delete)
+		admin.POST("/user/list", handlers.GetByPage)
 	}
 }
 
