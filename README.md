@@ -10,21 +10,23 @@ type User struct {
 	QscUser   *UserProfileQsc `json:"QscUser,omitempty"`
 }
 type UserProfileQsc struct {
-    ZjuId      string    `json:"zjuid"`
-    QscId      string    `json:"qscid"`
-    Password   string    `json:"-"`
-    Name       string    `json:"name"`
-    Gender     string    `json:"gender"`
-    Department string    `json:"department"`
-    Position   string    `json:"position"`
-    Status     string    `json:"status"`
-    Phone      string    `json:"phone"`
-    Email      string    `json:"email"`
-    Note       string    `json:"note"`
-    Birthday   time.Time `json:"birthday"`
-    JoinTime   time.Time `json:"jointime"`
+    ZjuId      string    `json:"zjuid" bson:"ZjuId"`
+    QscId      string    `json:"qscid" bson:"QscId"`
+    Password   string    `json:"-" bson:"Password"`
+    Name       string    `json:"name" bson:"Name"`
+    Gender     string    `json:"gender" bson:"Gender"`
+    Department string    `json:"department" bson:"Department"`
+    Position   string    `json:"position" bson:"Position"`
+    Status     string    `json:"status" bson:"Status"`
+    Phone      string    `json:"phone" bson:"Phone"`
+    Email      string    `json:"email" bson:"Email"`
+    Note       string    `json:"note" bson:"Note"`
+    Birthday   time.Time `json:"birthday,omitempty" bson:"Birthday"`
+    JoinTime   time.Time `json:"jointime,omitempty" bson:"JoinTime"`
 }
+
 ```
+**时间的格式前后端统一使用RFC3339**
 
 
 
@@ -32,7 +34,7 @@ type UserProfileQsc struct {
 
 ```json
 {
-    "err": ,
+    "err": "",
     "code":0,
     "data":{}, 
 }
@@ -52,7 +54,7 @@ request
 
 ```json
 {
-    "Qscid": "321010xxxx",
+    "qscid": "pta",
     "password": "abcabc",
 }
 ```
@@ -86,17 +88,11 @@ request
 
 ```json
 {
-    "password": "abcabc",
+    "password": "abcabc"
 }
 ```
 
 ### /admin GROUP
-
-#### /login [GET]
-
-#### /login [POST]
-
-Cookie记得改
 
 #### /user/list [GET]
 
@@ -112,13 +108,13 @@ request
       // ...返回的是所有的selector的交集
     }, 
     "sortBy": {
-    	"col":"",
-    	"isDescend": boolean //0升序，1降序
+    	"col":"", 
+    	"isDescend": boolean //true升序，false降序
 	}
 }
 ```
-- 注意：写filter的时候每一个键值对的Key都要和 UserProfileQsc(api文档最前面)里面定义的一样，不然会检索不到
-- 比如要检索还健在的潮人，应该输入 "Status":"alive"，而不是status
+- 注意：写filter的时候每一个键值对的Key都要和 UserProfileQsc(api文档最前面)里面bson中定义的一样，不然会检索不到
+- 比如要检索还健在的潮人，应该输入 "Status":"在职"，而不是status
 - 在比如检索qscid的时候，是QscId 而不是 Qscid
 
 response
@@ -150,20 +146,57 @@ request
 
 ```json
 {
-    "qscid": ,
+    "qscid": "",
     "user": $user, //后端记得检查Password字段
 }
 ```
 
+- example
+
+```json
+{
+    "qscid": "pta",
+    "user": {
+        "zjuid": "3210101234",
+        "qscid": "pta",
+        "name": "陈岩",
+        "department": "产研技术",
+        "gender": "男",
+        "position": "中管",
+        "status": "在职",
+        "phone": "123",
+        "email": "cy@qq.com",
+        "note": ""
+    }
+}
+```
+
 **HTML表单**
+`<input name="file">`
+
+csv文件格式：
+* 只支持csv-utf8格式（excel导出时选定该格式） 
+* 从左至右列内容依次为（无需标题行）：浙大学号，求是潮id，姓名，性别，部门，职位，状态，电话，邮箱，生日
+* 生日格式为：2003/10/13
+
 
 #### /user/updateMany [POST]
 
 ```json
 {
-    "id": $iduser, //qscId 
+    "qscid": $iduser, //qscId 
     "department": , //空即不修改该字段
     "postion": ,  
+}
+```
+
+- example
+
+```json
+{
+    "qscid": ["1238", "1239", "1240"],
+    "department": "摄影",
+    "position": ""
 }
 ```
 
@@ -175,7 +208,7 @@ request
 
 ```json
 {
-    "qscid": ,
+    "qscid": "1242"
 }
 ```
 

@@ -169,13 +169,15 @@ func DeleteByQscId(qscid string) error {
 	return err
 }
 
-func FindInPages(selector interface{}, limit, page int64, isDescend bool) (users []UserProfileQsc, err error) {
+func FindInPages(selector interface{}, limit, page int64, sortCol string, isDescend bool) (users []UserProfileQsc, err error) {
 	col := database.DB.Collection(utils.CollectionQscUsers)
 	findOptions := options.Find()
 	findOptions.SetSkip(page*limit - limit)
 	findOptions.SetLimit(limit)
 	if !isDescend {
-		findOptions.SetSort(bson.D{{"_id", -1}})
+		findOptions.SetSort(bson.D{{sortCol, -1}})
+	} else {
+		findOptions.SetSort(bson.D{{sortCol, 1}})
 	}
 	cur, err := col.Find(ctx, selector, findOptions)
 	if err != nil {

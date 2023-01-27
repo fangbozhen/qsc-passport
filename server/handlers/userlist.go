@@ -15,18 +15,20 @@ func GetByPage(c *gin.Context) {
 	var req struct {
 		PageNumber int64             `json:"pageNumber"`
 		PageSize   int64             `json:"pageSize"`
-		Sortby     Sortby            `json:"sortBy"`
 		Filter     map[string]string `json:"filter"`
+		Sortby     Sortby            `json:"sortBy"`
 	}
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Errorf("err: %s", err)
-		resp.Err(c, resp.InternalError, "passport内部错误")
+		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
 	}
-	users, err := model.FindInPages(req.Filter, req.PageSize, req.PageNumber, req.Sortby.Boolean)
+	users, err := model.FindInPages(req.Filter, req.PageSize, req.PageNumber, req.Sortby.Col, req.Sortby.Boolean)
 	if err != nil {
 		log.Errorf("err: %s", err)
-		resp.Err(c, resp.InternalError, "请检查输入参数")
+		resp.Err(c, resp.DatabaseError, "数据库错误")
+		return
 	}
 	resp.Json(c, gin.H{
 		"users": users,

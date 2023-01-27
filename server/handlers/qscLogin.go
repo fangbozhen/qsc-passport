@@ -12,7 +12,7 @@ import (
 
 func QscLoginJson(c *gin.Context) {
 	var req struct {
-		QscId    string `json:"Qscid"`
+		QscId    string `json:"qscid"`
 		Password string `json:"password"`
 	}
 

@@ -101,7 +101,7 @@ func Upload(c *gin.Context) {
 	for _, item := range record {
 		pwd, _ := bcrypt.GenerateFromPassword([]byte(item[1]), bcrypt.DefaultCost)
 		password := string(pwd)
-		birthday, _ := time.Parse("2006/01/02", item[9])
+		birthday, _ := time.Parse("2003/10/13", item[9])
 		user := model.UserProfileQsc{
 			ZjuId:      item[0],
 			QscId:      item[1],
