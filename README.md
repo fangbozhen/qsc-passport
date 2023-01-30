@@ -1,6 +1,6 @@
 # API 接口文档
 
-## user类
+## user类及相关值
 
 ```go
 type User struct {
@@ -28,6 +28,22 @@ type UserProfileQsc struct {
 ```
 **时间的格式前后端统一使用RFC3339**
 
+```go
+// postion
+const (
+	PosIntern     = "实习成员"
+	PosNormal     = "正式成员"
+	PosConsultant = "顾问"
+	PosManager    = "中管"
+	PosMaster     = "高管"
+)
+
+// status
+const (
+	StatusNormal = "在职"
+	StatusRetire = "退休"
+)
+```
 
 
 # JSON 格式

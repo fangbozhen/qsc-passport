@@ -85,23 +85,39 @@ func Upload(c *gin.Context) {
 	record, _ := reader.ReadAll()
 
 	mp := make(map[string]bool)
+	var ids1, ids2 []string
+	var flag bool
+	flag = false
 	for _, item := range record {
 
 		if mp[item[1]] {
-			resp.Err(c, resp.DatabaseError, fmt.Sprintf("用户表中QscId %s 重复", item[1]))
-			return
+			ids1 = append(ids1, item[1])
+			flag = true
+
 		}
 		if _, err := model.FindQSCerByQscId(item[1]); err == nil {
-			resp.Err(c, resp.DatabaseError, fmt.Sprintf("数据库中已有QscId %s", item[1]))
-			return
+			ids2 = append(ids2, item[1])
+			flag = true
 		}
 		mp[item[1]] = true
 	}
+	if flag {
+		var reply string
+		if len(ids1) != 0 {
+			reply = fmt.Sprintf("用户表中QscId %s 重复  ", ids1)
+		}
+		if len(ids2) != 0 {
+			reply = reply + fmt.Sprintf("数据库中已有 %s", ids2)
+		}
+		resp.Err(c, resp.DatabaseError, reply)
+		return
+	}
 
 	for _, item := range record {
-		pwd, _ := bcrypt.GenerateFromPassword([]byte(item[1]), bcrypt.DefaultCost)
+		pwd, _ := bcrypt.GenerateFromPassword([]byte(item[0]), bcrypt.DefaultCost)
 		password := string(pwd)
-		birthday, _ := time.Parse("2003/10/13", item[9])
+		birthday, _ := time.Parse("2006/01/02", item[9])
+		fmt.Println(birthday, item[9])
 		user := model.UserProfileQsc{
 			ZjuId:      item[0],
 			QscId:      item[1],
