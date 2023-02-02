@@ -1,0 +1,35 @@
+version: "1"
+
+services:
+
+  redis:
+    image: redis:7
+    container_name: passport_redis
+    restart: always
+    hostname: redis
+    expose:
+      - "6379:6379"
+
+  mongo:
+    image: mongo:4
+    container_name: passport_mongo
+    expose:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME: root
+      - MONGO_INITDB_ROOT_PASSWORD: 123456
+
+  passport:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: passport_server
+    restart: always
+    ports:
+      - "80:8333"
+    links:
+      - "redis:redis"
+      - "mongo:mongo"
+    depends_on:
+      - redis
+      - mongo

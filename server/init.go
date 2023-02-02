@@ -64,7 +64,7 @@ func initSession(r *gin.Engine) {
 
 func initCors(r *gin.Engine) {
 	corsCfg := cors.Config{
-		AllowOrigins:     []string{"https://www.qsc.zju.edu.cn"},
+		AllowOrigins:     []string{"localhost"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
 		AllowCredentials: true,

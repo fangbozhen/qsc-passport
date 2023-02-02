@@ -24,6 +24,10 @@ func GetByPage(c *gin.Context) {
 		resp.Err(c, resp.WrongRequestError, "参数错误")
 		return
 	}
+	if req.Sortby.Col == "" {
+		req.Sortby.Col = "QscId"
+		req.Sortby.Boolean = true
+	}
 	users, err := model.FindInPages(req.Filter, req.PageSize, req.PageNumber, req.Sortby.Col, req.Sortby.Boolean)
 	if err != nil {
 		log.Errorf("err: %s", err)
