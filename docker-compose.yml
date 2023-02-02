@@ -1,4 +1,4 @@
-version: "1"
+version: "3.3"
 
 services:
 
@@ -7,17 +7,18 @@ services:
     container_name: passport_redis
     restart: always
     hostname: redis
-    expose:
+    ports:
       - "6379:6379"
 
   mongo:
     image: mongo:4
     container_name: passport_mongo
-    expose:
-      - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME: root
-      - MONGO_INITDB_ROOT_PASSWORD: 123456
+      - MONGO_INITDB_DATABASE=my_db
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+    ports:
+      - "27017:27017"
 
   passport:
     build:
@@ -26,10 +27,7 @@ services:
     container_name: passport_server
     restart: always
     ports:
-      - "80:8333"
-    links:
-      - "redis:redis"
-      - "mongo:mongo"
+      - "3000:3000"
     depends_on:
       - redis
       - mongo
