@@ -12,12 +12,19 @@ import (
 var DB *mongo.Database
 
 func InitDb() {
+	log.Info("[Database] Init...")
 	clientOptions := options.Client().ApplyURI(config.Mongo.Uri)
 	clientOptions.SetConnectTimeout(time.Second * 2)
 	clientOptions.SetConnectTimeout(time.Second * 2)
 	clientOptions.SetServerSelectionTimeout(time.Second * 2)
 
-	mgoCli, err := mongo.Connect(context.TODO(), nil)
+	credential := options.Credential{
+		Username: "root",
+		Password: "123456",
+	}
+	clientOptions.SetAuth(credential)
+
+	mgoCli, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatalf("Error while connecting to MongoDB: %s", err)
 	}
@@ -28,4 +35,5 @@ func InitDb() {
 	}
 
 	DB = mgoCli.Database(config.Mongo.Database)
+	log.Info("[Database] Init success")
 }

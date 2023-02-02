@@ -4,16 +4,17 @@ MAINTAINER sync
 
 ENV GO111MODULE=on \
     CGO_ENABLE=0 \
-    GINMODE=release
+    GOPROXY="https://goproxy.io,direct" \
+    GIN_MODE=release
 
-WORKDIR C:\Users\gratian\Desktop\QSCpassport
+WORKDIR /go/src/qscpassport
 
-RUN go mod init passport \
-    && go mod tidy \
-    && go build -o passport .
+COPY . /go/src/qscpassport
+
+RUN go build -o /go/bin/passport .
 
 COPY config.yml .
 
-EXPOSE 8333
+EXPOSE 3000
 
-CMD ["./passport"]
+CMD ["/go/bin/passport"]
