@@ -81,7 +81,7 @@ request
 
 ### /logout [GET]
 
-### /user [GET]
+### /profile [GET]
 
 ```json
 {
@@ -93,10 +93,6 @@ request
    }
 }
 ```
-
-### /qsc/reset-password [GET]
-
-改密码界面
 
 ### /qsc/reset-password [POST]
 
@@ -110,7 +106,7 @@ request
 
 ### /admin GROUP
 
-#### /user/list [GET]
+#### /user/list [POST]
 
 request
 
