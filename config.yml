@@ -4,7 +4,7 @@ Server:
   SessionSecretString: "123456"
 
   # For Cookie, like ".qsc.zju.edu.cn"
-  Domain: "20.169.132.3"
+  Domain: "20.169.132.3:3000"
 
   # End with NO '/'
   # Used for 302 redirect.

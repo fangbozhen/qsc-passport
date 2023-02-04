@@ -64,7 +64,7 @@ func initSession(r *gin.Engine) {
 
 func initCors(r *gin.Engine) {
 	corsCfg := cors.Config{
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     []string{"localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
 		AllowCredentials: true,
