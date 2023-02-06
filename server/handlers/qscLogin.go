@@ -93,7 +93,7 @@ func QscRegister(c *gin.Context) {
 		resp.Err(c, resp.WrongRequestError, "参数错误")
 		return
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(qscuser.Password), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(qscuser.ZjuId), bcrypt.DefaultCost)
 	if err != nil {
 		log.Errorf("err: %s", err.Error())
 		resp.Err(c, resp.InternalError, "加密失败")

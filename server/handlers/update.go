@@ -36,6 +36,7 @@ func UpdateMany(c *gin.Context) {
 	var req struct {
 		Ids        []string `json:"qscid"`
 		Department string   `json:"department"`
+		Direction  string   `json:"direction"`
 		Position   string   `json:"position"`
 	}
 	err := c.ShouldBindJSON(&req)
@@ -45,7 +46,7 @@ func UpdateMany(c *gin.Context) {
 		return
 	}
 	for _, id := range req.Ids {
-		err := model.UpdateOne(id, req.Department, req.Position)
+		err := model.UpdateOne(id, req.Department, req.Direction, req.Position)
 		if err != nil {
 			log.Errorf("err: %s", err.Error())
 			resp.Err(c, resp.DatabaseError, "数据库批量更新失败")
@@ -77,7 +78,12 @@ func Delete(c *gin.Context) {
 }
 
 func Upload(c *gin.Context) {
-	rfile, _ := c.FormFile("file")
+	rfile, err := c.FormFile("file")
+	if err != nil {
+		log.Errorf("request error: %s", err.Error())
+		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
+	}
 	log.Infof("Get file: %s", rfile.Filename)
 	file, _ := rfile.Open()
 	reader := csv.NewReader(file)
@@ -116,7 +122,7 @@ func Upload(c *gin.Context) {
 	for _, item := range record {
 		pwd, _ := bcrypt.GenerateFromPassword([]byte(item[0]), bcrypt.DefaultCost)
 		password := string(pwd)
-		birthday, _ := time.Parse("2006/01/02", item[9])
+		birthday, _ := time.Parse("2006-01-02", item[10])
 		user := model.UserProfileQsc{
 			ZjuId:      item[0],
 			QscId:      item[1],
@@ -124,10 +130,11 @@ func Upload(c *gin.Context) {
 			Name:       item[2],
 			Gender:     item[3],
 			Department: item[4],
-			Position:   item[5],
-			Status:     item[6],
-			Phone:      item[7],
-			Email:      item[8],
+			Direction:  item[5],
+			Position:   item[6],
+			Status:     item[7],
+			Phone:      item[8],
+			Email:      item[9],
 			Note:       "",
 			Birthday:   birthday,
 			JoinTime:   time.Now(),

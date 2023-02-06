@@ -16,6 +16,7 @@ type UserProfileQsc struct {
     Name       string    `json:"name" bson:"Name"`
     Gender     string    `json:"gender" bson:"Gender"`
     Department string    `json:"department" bson:"Department"`
+    Direction  string    `json:"direction" bson:"Direction"`
     Position   string    `json:"position" bson:"Position"`
     Status     string    `json:"status" bson:"Status"`
     Phone      string    `json:"phone" bson:"Phone"`
@@ -152,7 +153,18 @@ response
 
 ```
 
-#### /user/updateOne [POST]
+#### /user/register [POST]
+
+request
+
+```json
+{
+    "user": $user
+}
+```
+
+
+#### /user/updateone [POST]
 
 request
 
@@ -183,6 +195,8 @@ request
 }
 ```
 
+#### /user/upload
+
 **HTML表单**
 `<input name="file">`
 
@@ -192,13 +206,14 @@ csv文件格式：
 * 生日格式为：2003/10/13
 
 
-#### /user/updateMany [POST]
+#### /user/updatemany [POST]
 
 ```json
 {
     "qscid": $iduser, //qscId 
-    "department": , //空即不修改该字段
-    "postion": ,  
+    "department": "", //空即不修改该字段
+    "direction": "",
+    "postion": "",  
 }
 ```
 
@@ -206,8 +221,9 @@ csv文件格式：
 
 ```json
 {
-    "qscid": ["1238", "1239", "1240"],
+    "qscid": ["1234", "1235", "1246"],
     "department": "摄影",
+    "direction": "",
     "position": ""
 }
 ```

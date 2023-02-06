@@ -57,6 +57,7 @@ type UserProfileQsc struct {
 	Name       string    `json:"name" bson:"Name"`
 	Gender     string    `json:"gender" bson:"Gender"`
 	Department string    `json:"department" bson:"Department"`
+	Direction  string    `json:"direction" bson:"Direction"`
 	Position   string    `json:"position" bson:"Position"`
 	Status     string    `json:"status" bson:"Status"`
 	Phone      string    `json:"phone" bson:"Phone"`
@@ -141,14 +142,14 @@ func UpdataOneByQscId(qscid string, user UserProfileQsc) error {
 	return res.Err()
 }
 
-func UpdateOne(qscid string, department string, position string) error {
+func UpdateOne(qscid string, department string, direction string, position string) error {
 	col := database.DB.Collection(utils.CollectionQscUsers)
 	filter := bson.M{"QscId": qscid}
 	var update bson.M
 	if department == "" {
 		update = bson.M{"$set": bson.M{"Position": position}}
 	} else {
-		update = bson.M{"$set": bson.M{"Department": department}}
+		update = bson.M{"$set": bson.M{"Department": department, "Direction": direction}}
 	}
 	_, err := col.UpdateMany(ctx, filter, update)
 	return err
