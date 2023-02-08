@@ -29,12 +29,14 @@ func GetByPage(c *gin.Context) {
 		req.Sortby.Boolean = true
 	}
 	users, err := model.FindInPages(req.Filter, req.PageSize, req.PageNumber, req.Sortby.Col, req.Sortby.Boolean)
+	userNum, err := model.FindUsers(req.Filter)
 	if err != nil {
 		log.Errorf("err: %s", err)
 		resp.Err(c, resp.DatabaseError, "数据库错误")
 		return
 	}
 	resp.Json(c, gin.H{
-		"users": users,
+		"userNum": userNum,
+		"users":   users,
 	})
 }

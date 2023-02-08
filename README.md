@@ -136,7 +136,10 @@ response
 {
    "code": 0,
    "err": "",
-   "data": $userarray, //返回一个User数组，包含要呈现的User信息
+   "data": {
+     "userNum": n, //数据库里的总用户数 
+     "users": $userarray//返回一个User数组，包含要呈现的User信息
+   }
 }
 ```
 - example: 返回是这样的
@@ -145,6 +148,7 @@ response
   "code": "",
   "err": "",
   "data":{
+    "userNum": 10,
     "users": {
       [{user1},{user2},{user3}]
     }

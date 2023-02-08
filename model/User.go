@@ -157,6 +157,9 @@ func UpdateOne(qscid string, department string, direction string, position strin
 
 func InsertQSCer(user UserProfileQsc) error {
 	col := database.DB.Collection(utils.CollectionQscUsers)
+	if _, err := FindQSCerByQscId(user.QscId); err == nil {
+		return errors.New(fmt.Sprintf("qscid %s already exist", user.QscId))
+	}
 	_, err := col.InsertOne(ctx, user)
 	return err
 }
@@ -168,6 +171,17 @@ func DeleteByQscId(qscid string) error {
 		return errors.New(fmt.Sprintf("user %s not found", qscid))
 	}
 	return err
+}
+
+func FindUsers(selector interface{}) (userNum int, err error) {
+	var users []UserProfileQsc
+	col := database.DB.Collection(utils.CollectionQscUsers)
+	cur, err := col.Find(ctx, selector, nil)
+	if err != nil {
+		return 0, err
+	}
+	err = cur.All(ctx, &users)
+	return len(users), nil
 }
 
 func FindInPages(selector interface{}, limit, page int64, sortCol string, isDescend bool) (users []UserProfileQsc, err error) {
