@@ -62,7 +62,7 @@ func initSession(r *gin.Engine) {
 		opt.Secure = false
 	}
 	store.Options(opt)
-	r.Use(sessions.Sessions("SessionToken", store))
+	r.Use(sessions.Sessions("SESSION_TOKEN", store))
 }
 
 func initCors(r *gin.Engine) {
