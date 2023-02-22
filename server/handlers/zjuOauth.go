@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,9 +16,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 func ZjuOauthRequest(c *gin.Context) {
@@ -114,6 +115,10 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 	ss.Set(utils.SessionKeyUser, user)
 	ss.Save()
 
+	sentry.WithScope(func(scope *sentry.Scope) {
+		scope.SetUser(sentry.User{ID: user.ZjuId, Name: user.Name})
+		sentry.CaptureMessage("zju-login-success")
+	})
 	redirectLoginSuccess(c)
 }
 

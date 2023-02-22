@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"github.com/getsentry/sentry-go"
 	"passport-v4/model"
 	"passport-v4/utils"
 	"passport-v4/utils/resp"
@@ -9,6 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	BaseURL         = "https://www.qsc.zju.edu.cn/passport/v4/static/"
+	LoginPath       = ""
+	SetPasswordPath = ""
 )
 
 func QscLoginJson(c *gin.Context) {
@@ -33,6 +41,10 @@ func QscLoginJson(c *gin.Context) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(qscer.Password), []byte(req.Password))
 	if err != nil {
+		sentry.WithScope(func(scope *sentry.Scope) {
+			scope.SetUser(sentry.User{ID: qscer.QscId})
+			sentry.CaptureMessage(fmt.Sprintf("qsc-login-password-error"))
+		})
 		log.Errorf("Request Error: %s", err.Error())
 		resp.Err(c, resp.WrongPasswordError, "密码错误")
 		return
@@ -45,6 +57,10 @@ func QscLoginJson(c *gin.Context) {
 	if err != nil {
 		log.Error(err)
 	}
+	sentry.WithScope(func(scope *sentry.Scope) {
+		scope.SetUser(sentry.User{ID: qscer.QscId})
+		sentry.CaptureMessage(fmt.Sprintf("qsc-login-success"))
+	})
 	resp.Json(c, user)
 }
 
@@ -108,4 +124,12 @@ func QscRegister(c *gin.Context) {
 		return
 	}
 	resp.Json(c, qscuser)
+}
+
+func QscLoginRediect(c *gin.Context) {
+	c.Redirect(302, BaseURL+LoginPath+c.Request.URL.RawQuery)
+}
+
+func SetPasswordRediect(c *gin.Context) {
+	c.Redirect(302, BaseURL+SetPasswordPath+c.Request.URL.RawQuery)
 }

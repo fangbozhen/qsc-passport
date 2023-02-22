@@ -20,8 +20,10 @@ func configRoutes(r *gin.Engine) {
 	r.Use(middleware.Response)
 	r.GET("/ping", handlers.Ping)
 
+	r.GET("/qsc/login", handlers.QscLoginRediect)
 	r.POST("/qsc/login", handlers.QscLoginJson)
-	r.POST("/qsc/reset-password", handlers.SetPasswordJson)
+	r.GET("/qsc/reset_password", handlers.SetPasswordRediect)
+	r.POST("/qsc/reset_password", handlers.SetPasswordJson)
 
 	r.GET("/zju/login", handlers.ZjuOauthRequest)
 	r.GET("/zju/login-success", handlers.ZjuOauthCodeReturn)
@@ -53,7 +55,7 @@ func initSession(r *gin.Engine) {
 		MaxAge:   config.Server.SessionExpire,
 		Secure:   true,
 		HttpOnly: false,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 	}
 
 	if gin.Mode() != gin.ReleaseMode {
@@ -65,7 +67,7 @@ func initSession(r *gin.Engine) {
 
 func initCors(r *gin.Engine) {
 	corsCfg := cors.Config{
-		AllowOrigins:     []string{"https://www.qsc.zju.edu.cn"},
+		AllowOrigins:     []string{"https://www.qsc.zju.edu.cn", "https://www.zjuqsc.com"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
 		AllowCredentials: true,
