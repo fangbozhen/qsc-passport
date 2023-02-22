@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,6 +14,8 @@ import (
 	"passport-v4/utils/resp"
 	"strconv"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-contrib/sessions"
@@ -43,10 +44,19 @@ func ZjuOauthRequest(c *gin.Context) {
 		config.ZjuOauth.ClientID,
 		url.QueryEscape(config.Server.UrlPrefix+"/zju/login_success"))
 
-	// 302 会导致Cookie丢失
-	c.HTML(200, "redirect.html", gin.H{
-		"href": url,
-	})
+	//  因为直接302会导致cookie保存失败，所以采用html内嵌js跳转
+	c.String(200, "text/html;charset=utf-8", `<!DOCTYPE html>
+	<html lang="en">
+	<header>
+		<meta charset="UTF-8">
+		<title>重定向</title>
+	</header>
+	
+	<body>
+		<script>
+			window.location.href = `+url+`;
+		</script>
+	</body>`)
 }
 
 func ZjuOauthCodeReturn(c *gin.Context) {
