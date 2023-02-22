@@ -45,7 +45,7 @@ func ZjuOauthRequest(c *gin.Context) {
 		url.QueryEscape(config.Server.UrlPrefix+"/zju/login_success"))
 
 	//  因为直接302会导致cookie保存失败，所以采用html内嵌js跳转
-	c.String(200, "text/html;charset=utf-8", `<!DOCTYPE html>
+	c.Data(200, "text/html;charset=utf-8", []byte(`<!DOCTYPE html>
 	<html lang="en">
 	<header>
 		<meta charset="UTF-8">
@@ -56,7 +56,7 @@ func ZjuOauthRequest(c *gin.Context) {
 		<script>
 			window.location.href = `+url+`;
 		</script>
-	</body>`)
+	</body>`))
 }
 
 func ZjuOauthCodeReturn(c *gin.Context) {

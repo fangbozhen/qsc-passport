@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/getsentry/sentry-go"
 	"passport-v4/model"
 	"passport-v4/utils"
 	"passport-v4/utils/resp"
+
+	"github.com/getsentry/sentry-go"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -14,9 +15,9 @@ import (
 )
 
 const (
-	BaseURL         = "https://www.qsc.zju.edu.cn/passport/v4/static/"
-	LoginPath       = ""
-	SetPasswordPath = ""
+	BaseURL         = "https://www.qsc.zju.edu.cn/passport/v4/static/index.html#"
+	LoginPath       = "/login"
+	SetPasswordPath = "/change_password"
 )
 
 func QscLoginJson(c *gin.Context) {
@@ -127,9 +128,9 @@ func QscRegister(c *gin.Context) {
 }
 
 func QscLoginRediect(c *gin.Context) {
-	c.Redirect(302, BaseURL+LoginPath+c.Request.URL.RawQuery)
+	c.Redirect(302, BaseURL+LoginPath+"?"+c.Request.URL.RawQuery)
 }
 
 func SetPasswordRediect(c *gin.Context) {
-	c.Redirect(302, BaseURL+SetPasswordPath+c.Request.URL.RawQuery)
+	c.Redirect(302, BaseURL+SetPasswordPath+"?"+c.Request.URL.RawQuery)
 }
