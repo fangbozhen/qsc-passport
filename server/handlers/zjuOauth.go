@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -113,6 +114,10 @@ func ZjuOauthCodeReturn(c *gin.Context) {
 	ss.Set(utils.SessionKeyUser, user)
 	ss.Save()
 
+	sentry.WithScope(func(scope *sentry.Scope) {
+		scope.SetUser(sentry.User{ID: user.ZjuId, Name: user.Name})
+		sentry.CaptureMessage("zju-login-success")
+	})
 	redirectLoginSuccess(c)
 }
 
@@ -129,7 +134,6 @@ func redirectLoginFailed(c *gin.Context, code int, reason string) {
 	query.Set("reason", reason)
 	query.Set("code", strconv.Itoa(code))
 	uri = fmt.Sprintf("%s?%s", uri, query.Encode())
-
 	log.Info("redirect to: %s", uri)
 	c.Redirect(302, uri)
 }

@@ -18,12 +18,6 @@ func InitDb() {
 	clientOptions.SetConnectTimeout(time.Second * 2)
 	clientOptions.SetServerSelectionTimeout(time.Second * 2)
 
-	credential := options.Credential{
-		Username: "root",
-		Password: "123456",
-	}
-	clientOptions.SetAuth(credential)
-
 	mgoCli, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatalf("Error while connecting to MongoDB: %s", err)

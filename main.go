@@ -4,6 +4,7 @@ import (
 	"QSCpassport/database"
 	"QSCpassport/server"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
@@ -23,8 +24,22 @@ func initLogger() {
 	})
 }
 
+func initSentry() {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: "https://19fc972b48574d11920c6b72e9c39af6@sentry.zjuqsc.com/5",
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+	})
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
+}
+
 func main() {
 	initLogger()
+	initSentry()
 	config.Init()
 	model.Init()
 	database.InitDb()

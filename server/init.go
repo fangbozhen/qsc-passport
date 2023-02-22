@@ -19,11 +19,13 @@ func configRoutes(r *gin.Engine) {
 	r.Use(middleware.Response)
 	r.GET("/ping", handlers.Ping)
 
+	r.GET("/qsc/login", handlers.QscLoginRediect)
 	r.POST("/qsc/login", handlers.QscLoginJson)
-	r.POST("/qsc/reset-password", handlers.SetPasswordJson)
+	r.GET("/qsc/reset_password", handlers.SetPasswordRediect)
+	r.POST("/qsc/reset_password", handlers.SetPasswordJson)
 
 	r.GET("/zju/login", handlers.ZjuOauthRequest)
-	r.GET("/zju/login-success", handlers.ZjuOauthCodeReturn)
+	r.GET("/zju/login_success", handlers.ZjuOauthCodeReturn)
 
 	r.GET("/logout", handlers.Logout)
 	r.GET("/profile", handlers.GetProfile)
@@ -53,7 +55,7 @@ func initSession(r *gin.Engine) {
 		MaxAge:   config.Server.SessionExpire,
 		Secure:   true,
 		HttpOnly: false,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 	}
 
 	if gin.Mode() != gin.ReleaseMode {
