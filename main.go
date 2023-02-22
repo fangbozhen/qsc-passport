@@ -2,48 +2,42 @@ package main
 
 import (
 	"fmt"
-	math_rand "math/rand"
+	"math/rand"
 	"os"
-	"passport-v4/config"
 	"passport-v4/database"
-	"passport-v4/model"
 	"passport-v4/server"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
+
+	"passport-v4/config"
+	"passport-v4/model"
 )
 
-// err handler
-func Do(err error) {
-	if err != nil {
-		logrus.Fatalf("Error in Init: %s", err)
-	}
-}
-
-func initLogger() error {
-	logrus.SetFormatter(&logrus.TextFormatter{
-		TimestampFormat:           "2006-01-02 15:04:05",
-		FullTimestamp:             true,
-		ForceQuote:                true,
-		EnvironmentOverrideColors: false,
+func initLogger() {
+	log.SetFormatter(&log.TextFormatter{
+		TimestampFormat: "2006-01-02 15:04:05",
+		FullTimestamp:   true,
+		ForceQuote:      true,
+		ForceColors:     true,
 	})
-	return nil
 }
 
 func main() {
 	initLogger()
-	Do(config.Init())
-	Do(model.Init())
-	Do(database.Init())
-	e := gin.Default()
-	Do(server.Init(e))
-	math_rand.Seed(time.Hour.Milliseconds())
+	config.Init()
+	model.Init()
+	database.InitDb()
+	router := gin.Default()
+	server.Init(router)
 
-	logrus.Infof("Gin Server Started")
-	err := e.Run(fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port))
+	rand.Seed(time.Hour.Milliseconds())
+
+	log.Info("Gin Server Started")
+	err := router.Run(fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port))
 	if err != nil {
-		logrus.Errorf("Error While Running Server: %s", err.Error())
+		log.Errorf("Error while running Server: %s", err.Error())
 		os.Exit(-1)
 	}
 }

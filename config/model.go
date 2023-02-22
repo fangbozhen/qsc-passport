@@ -31,6 +31,6 @@ type ZjuOauthType struct {
 type ConfigType struct {
 	Server   ServerType
 	Redis    RedisType
-	ZjuOauth ZjuOauthType
 	Mongo    MongoType
+	ZjuOauth ZjuOauthType
 }

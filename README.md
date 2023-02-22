@@ -28,6 +28,10 @@ interface User {
     name: string        // 兼容性设计，与`User.Name`相同
     qscid: string       // Qsc Id，注意区分大小写
     gender: string      // 性别 enum {"男", "女"}
+    phone: string       // 电话号
+    email: string       // 邮箱
+    note: string        // 备注信息
+    birthday: time.Time
     position: Position  // 身份
     department: string  // 部门
     direction: string   // 部门下分方向
@@ -146,3 +150,127 @@ redirect to `success_url` or `failed_url`
 ```
 
 - 成功无data返回，code=0
+
+
+### /admin GROUP
+
+#### /user/list [GET]
+
+request
+
+```json
+{
+    "pageNumber":"", // 从1开始
+    "pageSize":"" ,  
+    "filter":{
+      "selector1": "",
+      "selector2": "",
+      // ...返回的是所有的selector的交集
+    }, 
+    "sortBy": {
+    	"col":"", 
+    	"isDescend": boolean //true升序，false降序
+	}
+}
+```
+- 注意：写filter的时候每一个键值对的Key都要和 UserProfileQsc(api文档最前面)里面bson中定义的一样，不然会检索不到
+- 比如要检索还健在的潮人，应该输入 "Status":"在职"，而不是status
+- 在比如检索qscid的时候，是QscId 而不是 Qscid
+
+response
+
+```json
+{
+   "code": 0,
+   "err": "",
+   "data": $userarray, //返回一个User数组，包含要呈现的User信息
+}
+```
+- example: 返回是这样的
+```json
+{
+  "code": "",
+  "err": "",
+  "data":{
+    "users": {
+      [{user1},{user2},{user3}]
+    }
+  }
+}
+
+```
+
+#### /user/updateOne [POST]
+
+request
+
+```json
+{
+    "qscid": "",
+    "user": $user, //后端记得检查Password字段
+}
+```
+
+- example
+
+```json
+{
+    "qscid": "pta",
+    "user": {
+        "zjuid": "3210101234",
+        "qscid": "pta",
+        "name": "陈岩",
+        "department": "产研技术",
+        "gender": "男",
+        "position": "中管",
+        "status": "在职",
+        "phone": "123",
+        "email": "cy@qq.com",
+        "note": ""
+    }
+}
+```
+
+**HTML表单**
+`<input name="file">`
+
+csv文件格式：
+* 只支持csv-utf8格式（excel导出时选定该格式） 
+* 从左至右列内容依次为（无需标题行）：浙大学号，求是潮id，姓名，性别，部门，职位，状态，电话，邮箱，生日
+* 生日格式为：2003/10/13
+
+
+#### /user/updateMany [POST]
+
+```json
+{
+    "qscid": $iduser, //qscId 
+    "department": , //空即不修改该字段
+    "postion": ,  
+}
+```
+
+- example
+
+```json
+{
+    "qscid": ["1238", "1239", "1240"],
+    "department": "摄影",
+    "position": ""
+}
+```
+
+
+
+#### /user/delete [POST]
+
+request
+
+```json
+{
+    "qscid": "1242"
+}
+```
+
+
+

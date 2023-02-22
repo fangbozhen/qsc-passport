@@ -6,8 +6,6 @@ services:
     container_name: passport_redis
     restart: always
     hostname: redis
-    volumes:
-      - "[REDIS_CONF]:/usr/local/etc/redis/redis.conf"
     command:
       "redis-server /usr/local/etc/redis/redis.conf"
     expose:
