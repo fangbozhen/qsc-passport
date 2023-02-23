@@ -58,6 +58,7 @@ type UserProfileQsc struct {
 	Name       string    `json:"name" bson:"Name"`
 	Gender     string    `json:"gender" bson:"Gender"`
 	Department string    `json:"department" bson:"Department"`
+	Direction  string    `json:"direction" bson:"Direction"`
 	Position   string    `json:"position" bson:"Position"`
 	Status     string    `json:"status" bson:"Status"`
 	Phone      string    `json:"phone" bson:"Phone"`

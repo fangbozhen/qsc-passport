@@ -12,6 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// FIXME: 各种校验规则
 func UpdateOne(c *gin.Context) {
 	var req struct {
 		Qscid string               `json:"qscid"`
@@ -77,6 +78,7 @@ func Delete(c *gin.Context) {
 	resp.Json(c, nil)
 }
 
+// FIXME: 各种校验规则
 func Upload(c *gin.Context) {
 	rfile, _ := c.FormFile("file")
 	log.Infof("Get file: %s", rfile.Filename)
