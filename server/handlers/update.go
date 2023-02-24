@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/xuri/excelize/v2"
 	"passport-v4/model"
 	"passport-v4/utils/resp"
 	"time"
+
+	"github.com/xuri/excelize/v2"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -120,16 +121,12 @@ func Delete(c *gin.Context) {
 	resp.Json(c, nil)
 }
 
-func checkRows(rows *[][]string, c *gin.Context) {
+func checkRows(rows [][]string, c *gin.Context) bool {
 	mp := make(map[string]bool)
 	var ids1, ids2 []string
 	var flag bool
 	flag = false
-	for id, row := range *rows {
-		// skip title row
-		if id == 0 {
-			continue
-		}
+	for _, row := range rows[1:] {
 		if mp[row[9]] {
 			ids1 = append(ids1, row[9])
 			flag = true
@@ -149,33 +146,44 @@ func checkRows(rows *[][]string, c *gin.Context) {
 			reply = reply + fmt.Sprintf("数据库中已有 %s", ids2)
 		}
 		resp.Err(c, resp.DatabaseError, reply)
-		return
+		return false
 	}
+	return true
 }
 
 func Upload(c *gin.Context) {
 	rfile, err := c.FormFile("file")
-	file, err := rfile.Open()
-	f, err := excelize.OpenReader(file)
-	rows, err := f.GetRows("Sheet1")
-	defer func() {
-		if err := f.Close(); err != nil {
-			log.Errorf("Close file error: %s", err.Error())
-		}
-	}()
 	if err != nil {
 		log.Errorf("Open file error: %s", err.Error())
 		resp.Err(c, resp.WrongRequestError, "参数错误")
 		return
 	}
-	log.Infof("Get file: %s", rfile.Filename)
+	file, err := rfile.Open()
+	if err != nil {
+		log.Errorf("Open file error: %s", err.Error())
+		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
+	}
+	defer file.Close()
+	f, err := excelize.OpenReader(file)
+	if err != nil {
+		log.Errorf("Open file error: %s", err.Error())
+		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
+	}
+	defer f.Close()
+	rows, err := f.GetRows(f.GetSheetName(0))
+	if err != nil {
+		log.Errorf("Open file error: %s", err.Error())
+		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
+	}
 
-	checkRows(&rows, c)
+	if !checkRows(rows, c) {
+		return
+	}
 
-	for id, row := range rows {
-		if id == 0 {
-			continue
-		}
+	for _, row := range rows[1:] {
 		pwd, _ := bcrypt.GenerateFromPassword([]byte(row[1]), bcrypt.DefaultCost)
 		password := string(pwd)
 		birthday, _ := time.Parse("2006-01-02", row[3])
