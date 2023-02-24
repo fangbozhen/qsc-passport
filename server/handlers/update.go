@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"encoding/csv"
 	"fmt"
+	"github.com/xuri/excelize/v2"
 	"passport-v4/model"
 	"passport-v4/utils/resp"
 	"time"
@@ -12,7 +12,36 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// FIXME: 各种校验规则
+func checkUser(Department string, Direction string, Position string) (err error) {
+	var (
+		departments = [8]string{"新闻资讯中心", "产品研发中心", "人力资源部门", "摄影部", "推广策划中心", "视频部门", "设计与视觉中心", ""}
+		directions  = [3]string{"技术研发方向", "产品运营方向", ""}
+		positions   = [9]string{"实习成员", "正式成员", "中管", "顾问", "中级成员", "高管", "高级顾问", "退休老干部"}
+	)
+	flag := false
+	for _, department := range departments {
+		if Department == department {
+			flag = true
+		}
+	}
+	if !flag {
+		return fmt.Errorf("部门字段错误")
+	}
+	if Department == departments[1] && Direction != directions[0] && Direction != directions[1] {
+		return fmt.Errorf("方向字段错误")
+	}
+	flag = false
+	for _, position := range positions {
+		if Position == position {
+			flag = true
+		}
+	}
+	if !flag {
+		return fmt.Errorf("职位字段错误")
+	}
+	return nil
+}
+
 func UpdateOne(c *gin.Context) {
 	var req struct {
 		Qscid string               `json:"qscid"`
@@ -22,6 +51,12 @@ func UpdateOne(c *gin.Context) {
 	if err != nil {
 		log.Errorf("request error: %s", err.Error())
 		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
+	}
+	err = checkUser(req.User.Department, req.User.Direction, req.User.Position)
+	if err != nil {
+		log.Errorf("request error: %s", err.Error())
+		resp.Err(c, resp.DatabaseError, err.Error())
 		return
 	}
 	err = model.UpdataOneByQscId(req.Qscid, req.User)
@@ -38,12 +73,19 @@ func UpdateMany(c *gin.Context) {
 	var req struct {
 		Ids        []string `json:"qscid"`
 		Department string   `json:"department"`
+		Direction  string   `json:"direction"`
 		Position   string   `json:"position"`
 	}
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Errorf("request error: %s", err.Error())
 		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
+	}
+	err = checkUser(req.Department, req.Direction, req.Position)
+	if err != nil {
+		log.Errorf("request error: %s", err.Error())
+		resp.Err(c, resp.DatabaseError, err.Error())
 		return
 	}
 	for _, id := range req.Ids {
@@ -78,31 +120,25 @@ func Delete(c *gin.Context) {
 	resp.Json(c, nil)
 }
 
-// FIXME: 各种校验规则
-func Upload(c *gin.Context) {
-	rfile, _ := c.FormFile("file")
-	log.Infof("Get file: %s", rfile.Filename)
-	file, _ := rfile.Open()
-	reader := csv.NewReader(file)
-	reader.FieldsPerRecord = -1
-	record, _ := reader.ReadAll()
-
+func checkRows(rows *[][]string, c *gin.Context) {
 	mp := make(map[string]bool)
 	var ids1, ids2 []string
 	var flag bool
 	flag = false
-	for _, item := range record {
-
-		if mp[item[1]] {
-			ids1 = append(ids1, item[1])
-			flag = true
-
+	for id, row := range *rows {
+		// skip title row
+		if id == 0 {
+			continue
 		}
-		if _, err := model.FindQSCerByQscId(item[1]); err == nil {
-			ids2 = append(ids2, item[1])
+		if mp[row[9]] {
+			ids1 = append(ids1, row[9])
 			flag = true
 		}
-		mp[item[1]] = true
+		if _, err := model.FindQSCerByQscId(row[9]); err == nil {
+			ids2 = append(ids2, row[9])
+			flag = true
+		}
+		mp[row[9]] = true
 	}
 	if flag {
 		var reply string
@@ -115,23 +151,46 @@ func Upload(c *gin.Context) {
 		resp.Err(c, resp.DatabaseError, reply)
 		return
 	}
+}
 
-	for _, item := range record {
-		pwd, _ := bcrypt.GenerateFromPassword([]byte(item[0]), bcrypt.DefaultCost)
+func Upload(c *gin.Context) {
+	rfile, err := c.FormFile("file")
+	file, err := rfile.Open()
+	f, err := excelize.OpenReader(file)
+	rows, err := f.GetRows("Sheet1")
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Errorf("Close file error: %s", err.Error())
+		}
+	}()
+	if err != nil {
+		log.Errorf("Open file error: %s", err.Error())
+		resp.Err(c, resp.WrongRequestError, "参数错误")
+		return
+	}
+	log.Infof("Get file: %s", rfile.Filename)
+
+	checkRows(&rows, c)
+
+	for id, row := range rows {
+		if id == 0 {
+			continue
+		}
+		pwd, _ := bcrypt.GenerateFromPassword([]byte(row[1]), bcrypt.DefaultCost)
 		password := string(pwd)
-		birthday, _ := time.Parse("2006/01/02", item[9])
-		fmt.Println(birthday, item[9])
+		birthday, _ := time.Parse("2006-01-02", row[3])
 		user := model.UserProfileQsc{
-			ZjuId:      item[0],
-			QscId:      item[1],
+			ZjuId:      row[1],
+			QscId:      row[9],
 			Password:   password,
-			Name:       item[2],
-			Gender:     item[3],
-			Department: item[4],
-			Position:   item[5],
-			Status:     item[6],
-			Phone:      item[7],
-			Email:      item[8],
+			Name:       row[0],
+			Gender:     row[2],
+			Department: row[6],
+			Direction:  row[7],
+			Position:   row[8],
+			Status:     model.StatusNormal,
+			Phone:      row[5],
+			Email:      row[4],
 			Note:       "",
 			Birthday:   birthday,
 			JoinTime:   time.Now(),

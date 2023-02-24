@@ -234,11 +234,6 @@ request
 **HTML表单**
 `<input name="file">`
 
-csv文件格式：
-* 只支持csv-utf8格式（excel导出时选定该格式） 
-* 从左至右列内容依次为（无需标题行）：浙大学号，求是潮id，姓名，性别，部门，职位，状态，电话，邮箱，生日
-* 生日格式为：2003/10/13
-
 
 #### /user/updateMany [POST]
 
@@ -246,6 +241,7 @@ csv文件格式：
 {
     "qscid": $iduser, //qscId 
     "department": , //空即不修改该字段
+    "direction": ,
     "postion": ,  
 }
 ```
@@ -254,9 +250,14 @@ csv文件格式：
 
 ```json
 {
-    "qscid": ["1238", "1239", "1240"],
-    "department": "摄影",
-    "position": ""
+  "qscid": [
+    "1238",
+    "1239",
+    "1240"
+  ],
+  "department": "摄影",
+  "direction": "",
+  "position": ""
 }
 ```
 
