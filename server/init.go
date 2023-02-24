@@ -26,7 +26,7 @@ func configRoutes(r *gin.Engine) {
 	r.POST("/qsc/reset_password", handlers.SetPasswordJson)
 
 	r.GET("/zju/login", handlers.ZjuOauthRequest)
-	r.GET("/zju/login-success", handlers.ZjuOauthCodeReturn)
+	r.GET("/zju/login_success", handlers.ZjuOauthCodeReturn)
 
 	r.GET("/logout", handlers.Logout)
 	r.GET("/profile", handlers.GetProfile)
