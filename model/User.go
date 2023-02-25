@@ -171,6 +171,7 @@ func DeleteByQscId(qscid string) error {
 	return err
 }
 
+// TODO: isDescend 是不是反了
 func FindInPages(selector interface{}, limit, page int64, sortCol string, isDescend bool) (users []UserProfileQsc, err error) {
 	col := database.DB.Collection(utils.CollectionQscUsers)
 	findOptions := options.Find()

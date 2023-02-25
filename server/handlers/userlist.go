@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// TODO: isDescend 是不是反了
 func GetByPage(c *gin.Context) {
 	type Sortby struct {
 		Col     string `json:"col"`
