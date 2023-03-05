@@ -118,6 +118,9 @@ func QscRegister(c *gin.Context) {
 		return
 	}
 	qscuser.Password = string(hash)
+	if qscuser.Privilege == nil {
+		qscuser.Privilege = map[string]string{}
+	}
 	err = model.InsertQSCer(qscuser)
 	if err != nil {
 		log.Errorf("err: %s", err.Error())
