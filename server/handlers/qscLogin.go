@@ -119,7 +119,7 @@ func QscRegister(c *gin.Context) {
 	}
 	qscuser.Password = string(hash)
 	if qscuser.Privilege == nil {
-		qscuser.Privilege = map[string]string{}
+		qscuser.Privilege = []string{}
 	}
 	err = model.InsertQSCer(qscuser)
 	if err != nil {

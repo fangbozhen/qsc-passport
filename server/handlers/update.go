@@ -202,7 +202,7 @@ func Upload(c *gin.Context) {
 			Note:       "",
 			Birthday:   birthday,
 			JoinTime:   time.Now(),
-			Privilege:  map[string]string{},
+			Privilege:  []string{},
 		}
 		err := model.InsertQSCer(user)
 		if err != nil {
