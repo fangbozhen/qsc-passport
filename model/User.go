@@ -66,7 +66,7 @@ type UserProfileQsc struct {
 	Note       string    `json:"note" bson:"Note"`
 	Birthday   time.Time `json:"birthday,omitempty" bson:"Birthday"`
 	JoinTime   time.Time `json:"jointime,omitempty" bson:"JoinTime"`
-	Privilege  ssmap     `json:"privilege" bson:"Privilege"`
+	Privilege  []string  `json:"privilege" bson:"Privilege"`
 }
 
 func ZjuProfile2User(pf UserProfileZju) User {
@@ -172,16 +172,15 @@ func DeleteByQscId(qscid string) error {
 	return err
 }
 
-// TODO: isDescend 是不是反了
 func FindInPages(selector interface{}, limit, page int64, sortCol string, isDescend bool) (users []UserProfileQsc, err error) {
 	col := database.DB.Collection(utils.CollectionQscUsers)
 	findOptions := options.Find()
 	findOptions.SetSkip(page*limit - limit)
 	findOptions.SetLimit(limit)
 	if !isDescend {
-		findOptions.SetSort(bson.D{{sortCol, -1}})
-	} else {
 		findOptions.SetSort(bson.D{{sortCol, 1}})
+	} else {
+		findOptions.SetSort(bson.D{{sortCol, -1}})
 	}
 	cur, err := col.Find(ctx, selector, findOptions)
 	if err != nil {
