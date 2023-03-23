@@ -33,6 +33,7 @@ func configRoutes(r *gin.Engine) {
 
 	admin := r.Group("/admin", middleware.AdminCheck)
 	{
+		admin.POST("/user/register", handlers.QscRegister)
 		admin.POST("/user/upload", handlers.Upload)
 		admin.POST("/user/updateone", handlers.UpdateOne)
 		admin.POST("/user/updatemany", handlers.UpdateMany)
