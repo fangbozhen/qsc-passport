@@ -66,7 +66,8 @@ type UserProfileQsc struct {
 	Note       string    `json:"note" bson:"Note"`
 	Birthday   time.Time `json:"birthday,omitempty" bson:"Birthday"`
 	JoinTime   time.Time `json:"jointime,omitempty" bson:"JoinTime"`
-	Privilege  []string  `json:"privilege" bson:"Privilege"`
+	//
+	Privilege ssmap `json:"privilege" bson:"Privilege"`
 }
 
 func ZjuProfile2User(pf UserProfileZju) User {

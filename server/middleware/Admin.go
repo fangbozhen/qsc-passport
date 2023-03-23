@@ -24,7 +24,8 @@ func AdminCheck(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	if user.QscUser.Position != model.PosManager && user.QscUser.Position != model.PosMaster {
+
+	if user.QscUser.Position != model.PosMaster {
 		resp.Err(c, resp.AuthFailedError, "不是管理员")
 		c.Abort()
 		return
