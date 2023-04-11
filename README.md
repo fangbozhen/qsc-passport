@@ -37,7 +37,7 @@ interface User {
     direction: string   // 部门下分方向
     jointime: string    // RFC3339 注意读出是GMT
     status: string      // 状态【保留】
-    privilege: string[]   // 权限组【保留】
+    privilege: map<string, string>   // 权限组【保留】
   }
 }
 
