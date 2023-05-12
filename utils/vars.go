@@ -3,6 +3,7 @@ package utils
 // CollectionQscUsers MongoDB Collections
 const (
 	CollectionQscUsers = "qsc_users"
+	CollectionList     = "list"
 )
 
 // CtxResponse gin context

@@ -31,6 +31,8 @@ func configRoutes(r *gin.Engine) {
 	r.GET("/logout", handlers.Logout)
 	r.GET("/profile", handlers.GetProfile)
 
+	r.GET("/privilege", handlers.GetPivilege)
+
 	admin := r.Group("/admin", middleware.AdminCheck)
 	{
 		admin.POST("/user/register", handlers.QscRegister)
